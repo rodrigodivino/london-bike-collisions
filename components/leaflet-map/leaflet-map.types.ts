@@ -1,4 +1,4 @@
-export namespace LeafletMap {
+export namespace LeafletMapTypes {
   export interface Props {
   
   }
