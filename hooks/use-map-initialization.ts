@@ -13,8 +13,8 @@ export const useMapInitialization = (mapContainerRef: RefObject<HTMLDivElement>)
     const center = new LatLng(51.507359, -0.136439);
     const initialZoom = 11;
     mapRef.current = L.map(mapContainerRef.current).setView(center, initialZoom);
+    
   }, [mapContainerRef]);
-  
   
   return mapRef;
 };
