@@ -19,8 +19,20 @@ const Home: NextPage = () => {
         <main className={styles.main}>
           <h1>London Bike Collisions</h1>
           <h2>Data visualization of london bike collisions between 200X - 200X</h2>
-          <div className={styles.visualization}>
+          <div className={styles.layerContainer}>
+            <div className={styles.interactiveLayer}>
               <LeafletMapNoNextSSR/>
+            </div>
+            <div className={styles.layer}>
+              <svg className={styles.svg}>
+                <rect width={100} height={100}/>
+              </svg>
+            </div>
+            <div className={styles.layer}>
+              <canvas className={styles.canvas}/>
+            </div>
+            
+            
           </div>
         </main>
         
