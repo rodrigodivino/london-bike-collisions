@@ -1,7 +1,8 @@
 import type {NextPage} from 'next';
 import Head from 'next/head';
 import styles from '../styles/Home.module.css';
-import LeafletMapNoNextSSR from "../components/leaflet-map/leaflet-map-no-next-ssr";
+import SharedLeafletMapNoNextSSR from "../components/shared-leaflet-map/shared-leaflet-map-no-next-ssr";
+import {SVGOverlay} from "../components/svg-overlay/svg-overlay";
 
 
 const Home: NextPage = () => {
@@ -21,18 +22,11 @@ const Home: NextPage = () => {
           <h2>Data visualization of london bike collisions between 200X - 200X</h2>
           <div className={styles.layerContainer}>
             <div className={styles.interactiveLayer}>
-              <LeafletMapNoNextSSR/>
+              <SharedLeafletMapNoNextSSR/>
             </div>
             <div className={styles.layer}>
-              <svg className={styles.svg}>
-                <rect width={100} height={100}/>
-              </svg>
+              <SVGOverlay/>
             </div>
-            <div className={styles.layer}>
-              <canvas className={styles.canvas}/>
-            </div>
-            
-            
           </div>
         </main>
         

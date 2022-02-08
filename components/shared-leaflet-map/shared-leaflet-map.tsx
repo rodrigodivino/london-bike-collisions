@@ -1,10 +1,10 @@
 import {FunctionComponent, useEffect, useRef} from "react";
-import {LeafletMapTypes} from "./leaflet-map.types";
-import styles from './leaflet-map.module.css';
+import {SharedLeafletMapTypes} from "./shared-leaflet-map.types";
+import styles from './shared-leaflet-map.module.css';
 import * as L from 'leaflet';
 import {LatLng} from "leaflet";
 
-const LeafletMap: FunctionComponent<LeafletMapTypes.Props> = () => {
+const SharedLeafletMap: FunctionComponent<SharedLeafletMapTypes.Props> = () => {
   const mapContainer = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
@@ -22,4 +22,4 @@ const LeafletMap: FunctionComponent<LeafletMapTypes.Props> = () => {
   </div>
 }
 
-export default LeafletMap;
+export default SharedLeafletMap;
