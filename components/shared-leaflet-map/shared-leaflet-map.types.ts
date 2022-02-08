@@ -1,7 +1,8 @@
 import {Map as LMap} from 'leaflet';
+import {MutableRefObject} from "react";
 
 export namespace SharedLeafletMapTypes {
   export interface Props {
-    onMap: (map: LMap) => void;
+    onUpdate?: (mapRef: MutableRefObject<LMap | undefined>) => void;
   }
 }
