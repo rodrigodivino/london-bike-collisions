@@ -4,19 +4,18 @@ import styles from '../styles/Home.module.css';
 import SharedLeafletMapNoNextSSR from "../components/shared-leaflet-map/shared-leaflet-map-no-next-ssr";
 import {SVGOverlay} from "../components/svg-overlay/svg-overlay";
 import * as L from 'leaflet';
-import {getGeoProjection} from "../hooks/get-geo-projection";
+import {LatLngExpression} from 'leaflet';
 import {useCallback, useState} from "react";
 
+const INITIAL_CENTER: LatLngExpression = {lat: 51.507359, lng: -0.136439};
+const INITIAL_ZOOM: number = 11;
 
 const Home: NextPage = () => {
-  const [{map}, setMapWrapper] = useState<{map: L.Map | undefined}>({map: undefined});
+  const [{map}, setMapWrapper] = useState<{ map: L.Map | undefined }>({map: undefined});
   
   const updateMap = useCallback((map: L.Map) => {
-    setMapWrapper({map})
+    setMapWrapper({map});
   }, []);
-  
-  const projection = getGeoProjection(map);
-  
   
   return (
       <div>
@@ -28,16 +27,15 @@ const Home: NextPage = () => {
                 crossOrigin=""/>
           {/*<link rel="icon" href="/favicon.ico" />*/}
         </Head>
-        
         <main className={styles.main}>
           <h1>London Bike Collisions</h1>
           <h2>Data visualization of london bike collisions between 200X - 200X</h2>
           <div className={styles.layerContainer}>
             <div className={styles.interactiveLayer}>
-              <SharedLeafletMapNoNextSSR onUpdate={updateMap}/>
+              <SharedLeafletMapNoNextSSR onUpdate={updateMap} initialCenter={INITIAL_CENTER} initialZoom={INITIAL_ZOOM}/>
             </div>
             <div className={styles.layer}>
-              <SVGOverlay projection={projection}/>
+              {map && <SVGOverlay map={map}/>}
             </div>
           </div>
         </main>

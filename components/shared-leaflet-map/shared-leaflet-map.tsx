@@ -4,10 +4,16 @@ import styles from './shared-leaflet-map.module.css';
 import {useMapInitialization} from "../../hooks/use-map-initialization";
 import {useMapMoveEvent} from "../../hooks/use-map-move-event";
 
-const SharedLeafletMap: FunctionComponent<SharedLeafletMapTypes.Props> = ({onUpdate}) => {
+const SharedLeafletMap: FunctionComponent<SharedLeafletMapTypes.Props> = (
+    {
+      onUpdate,
+      initialCenter,
+      initialZoom
+    }
+) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   
-  const mapRef = useMapInitialization(mapContainer);
+  const mapRef = useMapInitialization(mapContainer, initialCenter, initialZoom);
   // TODO: Test better approaches to register to events
   useMapMoveEvent(mapRef, onUpdate);
   
