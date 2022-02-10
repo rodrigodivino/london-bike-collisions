@@ -5,7 +5,9 @@ import SharedLeafletMapNoNextSSR from "../components/shared-leaflet-map/shared-l
 import {SVGOverlay} from "../components/svg-overlay/svg-overlay";
 import * as L from 'leaflet';
 import {LatLngExpression} from 'leaflet';
-import {useCallback, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
+import {BikeCollision} from "../types/bike-collision";
+import {useCSV} from "../hooks/useCSV";
 
 const INITIAL_CENTER: LatLngExpression = {lat: 51.507359, lng: -0.136439};
 const INITIAL_ZOOM: number = 11;
@@ -13,9 +15,29 @@ const INITIAL_ZOOM: number = 11;
 const Home: NextPage = () => {
   const [{map}, setMapWrapper] = useState<{ map: L.Map | undefined }>({map: undefined});
   
+  const data = useCSV<BikeCollision>('/data/bike_collisions.csv');
+  
   const updateMap = useCallback((map: L.Map) => {
     setMapWrapper({map});
   }, []);
+  
+  useEffect(() => {
+    console.log("data", data);
+  }, [data]);
+  
+  const Main = <main className={styles.main}>
+    <h1>London Bike Collisions</h1>
+    <h2>Data visualization of london bike collisions between 200X - 200X</h2>
+    <div className={styles.layerContainer}>
+      <div className={styles.interactiveLayer}>
+        <SharedLeafletMapNoNextSSR onUpdate={updateMap} initialCenter={INITIAL_CENTER} initialZoom={INITIAL_ZOOM}/>
+      </div>
+      <div className={styles.layer}>
+        {map && <SVGOverlay map={map} data={data ?? []}/>}
+      </div>
+    </div>
+  </main>;
+  const Loading = <p>Loading</p>;
   
   return (
       <div>
@@ -27,19 +49,7 @@ const Home: NextPage = () => {
                 crossOrigin=""/>
           {/*<link rel="icon" href="/favicon.ico" />*/}
         </Head>
-        <main className={styles.main}>
-          <h1>London Bike Collisions</h1>
-          <h2>Data visualization of london bike collisions between 200X - 200X</h2>
-          <div className={styles.layerContainer}>
-            <div className={styles.interactiveLayer}>
-              <SharedLeafletMapNoNextSSR onUpdate={updateMap} initialCenter={INITIAL_CENTER} initialZoom={INITIAL_ZOOM}/>
-            </div>
-            <div className={styles.layer}>
-              {map && <SVGOverlay map={map}/>}
-            </div>
-          </div>
-        </main>
-        
+        {(data && data.length > 0) ? Main : Loading}
         <footer className={styles.footer}>
           Footer
         </footer>
