@@ -13,13 +13,18 @@ const INITIAL_CENTER: LatLngExpression = {lat: 51.507359, lng: -0.136439};
 const INITIAL_ZOOM: number = 11;
 
 const Home: NextPage = () => {
-  const [{map}, setMapWrapper] = useState<{ map: L.Map | undefined }>({map: undefined});
-  
   const data = useCSV<BikeCollision>('/data/bike_collisions.csv');
   
-  const updateMap = useCallback((map: L.Map) => {
+  const [{map}, setMapWrapper] = useState<{ map: L.Map | undefined }>({map: undefined});
+  const [isZooming, setIsZooming] = useState<boolean>(false);
+  
+  const handleMapUpdate = useCallback((map: L.Map) => {
     setMapWrapper({map});
   }, []);
+  
+  const handleMapZoomStateUpdate = useCallback((isZooming: boolean) => {
+    setIsZooming(isZooming);
+  }, [])
   
   useEffect(() => {
     console.log("data", data);
@@ -30,10 +35,15 @@ const Home: NextPage = () => {
     <h2>Data visualization of london bike collisions between 2005 - 2019</h2>
     <div className={styles.layerContainer}>
       <div className={styles.interactiveLayer}>
-        <SharedLeafletMapNoNextSSR onUpdate={updateMap} initialCenter={INITIAL_CENTER} initialZoom={INITIAL_ZOOM}/>
+        <SharedLeafletMapNoNextSSR
+            $onUpdate$={handleMapUpdate}
+            $onZoomStateUpdate$={handleMapZoomStateUpdate}
+            initialCenter={INITIAL_CENTER}
+            initialZoom={INITIAL_ZOOM}
+        />
       </div>
       <div className={styles.layer}>
-        {map && <SVGOverlay map={map} data={data ?? []}/>}
+        {map && <SVGOverlay map={map} data={data ?? []} isZooming={isZooming}/>}
       </div>
     </div>
   </main>;

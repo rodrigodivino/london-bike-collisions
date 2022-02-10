@@ -5,5 +5,6 @@ export namespace SVGOverlayTypes {
   export interface Props {
     map: LMap;
     data: BikeCollision[];
+    isZooming: boolean;
   }
 }
