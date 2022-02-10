@@ -27,7 +27,7 @@ const Home: NextPage = () => {
   
   const Main = <main className={styles.main}>
     <h1>London Bike Collisions</h1>
-    <h2>Data visualization of london bike collisions between 200X - 200X</h2>
+    <h2>Data visualization of london bike collisions between 2005 - 2019</h2>
     <div className={styles.layerContainer}>
       <div className={styles.interactiveLayer}>
         <SharedLeafletMapNoNextSSR onUpdate={updateMap} initialCenter={INITIAL_CENTER} initialZoom={INITIAL_ZOOM}/>
@@ -51,7 +51,8 @@ const Home: NextPage = () => {
         </Head>
         {(data && data.length > 0) ? Main : Loading}
         <footer className={styles.footer}>
-          Footer
+          Data:  <a href={'https://bikedata.cyclestreets.net/collisions/#9.44/51.4814/0.0567'}>Bike Collisions in London</a> (2005-2019),
+          Data Source: <a href={'https://bikedata.cyclestreets.net/collisions/#9.44/51.4814/0.0567'}>CycleStreets</a>
         </footer>
       </div>
   );
