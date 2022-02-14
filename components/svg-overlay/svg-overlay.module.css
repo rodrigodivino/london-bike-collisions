@@ -11,3 +11,7 @@
     opacity: 0.3;
     filter: grayscale(100%);
 }
+
+.hexbin {
+    stroke: none;
+}

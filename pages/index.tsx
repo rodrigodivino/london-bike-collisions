@@ -2,12 +2,13 @@ import type {NextPage} from 'next';
 import Head from 'next/head';
 import styles from '../styles/Home.module.css';
 import SharedLeafletMapNoNextSSR from "../components/shared-leaflet-map/shared-leaflet-map-no-next-ssr";
-import {SVGOverlay} from "../components/svg-overlay/svg-overlay";
+import SVGOverlay from "../components/svg-overlay/svg-overlay";
 import * as L from 'leaflet';
 import {LatLngExpression} from 'leaflet';
 import {useCallback, useEffect, useState} from "react";
 import {BikeCollision} from "../types/bike-collision";
 import {useCSV} from "../hooks/use-csv";
+import SVGOverlayNoNextSSR from "../components/svg-overlay/svg-overlay-no-next-ssr";
 
 const INITIAL_CENTER: LatLngExpression = {lat: 51.507359, lng: -0.136439};
 const INITIAL_ZOOM: number = 11;
@@ -43,7 +44,7 @@ const Home: NextPage = () => {
         />
       </div>
       <div className={styles.layer}>
-        {map && <SVGOverlay map={map} data={data ?? []} isZooming={isZooming}/>}
+        {map && <SVGOverlayNoNextSSR map={map} data={data ?? []} isZooming={isZooming}/>}
       </div>
     </div>
   </main>;
