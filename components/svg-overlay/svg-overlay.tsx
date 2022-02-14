@@ -6,7 +6,7 @@ import {BikeCollision} from "../../types/bike-collision";
 import {getProjectedLayout, ProjectedLayout} from "../../hooks/get-projected-layout";
 import {hexbin} from "d3-hexbin";
 import {extent, scaleLinear} from "d3";
-import {LatLng} from "leaflet";
+import {getMetersInPixels} from "../../hooks/get-meters-in-pixels";
 
 const SVGOverlay: FunctionComponent<SVGOverlayTypes.Props> = ({map, data, isZooming}) => {
   const projectedData = getProjectedLayout<BikeCollision>(
@@ -19,12 +19,7 @@ const SVGOverlay: FunctionComponent<SVGOverlayTypes.Props> = ({map, data, isZoom
   const markerData = projectedData.filter(d => filter(d.d));
   const contextData = projectedData.filter(d => !filter(d.d));
   
-  const bound = new LatLng(51.507359, -0.136439).toBounds(300);
-  
-  const nw = bound.getNorthWest();
-  const ne = bound.getNorthEast();
-  
-  const binRadius = map.latLngToContainerPoint(nw).distanceTo(map.latLngToContainerPoint(ne));
+  const binRadius = getMetersInPixels(map, 300);
   
   const hexbinGenerator = hexbin<ProjectedLayout<BikeCollision>>()
       .x(d => d.x)
