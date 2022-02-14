@@ -177,6 +177,11 @@
   dependencies:
     "@types/geojson" "*"
 
+"@types/d3-hexbin@^0.2.3":
+  "integrity" "sha512-R/mmx2FJucHACRvGFoI+6jpr3mOAD6wuU2OjuCixxGRPHdmQNlMtBGBwxTmTs//kJvBzk9/vMhn47QOcY8Afrg=="
+  "resolved" "https://registry.npmjs.org/@types/d3-hexbin/-/d3-hexbin-0.2.3.tgz"
+  "version" "0.2.3"
+
 "@types/d3-hierarchy@*":
   "integrity" "sha512-+krnrWOZ+aQB6v+E+jEkmkAx9HvsNAD+1LCD0vlBY3t+HwjKnsBFbpVLx6WWzDzCIuiTWdAxXMEnGnVXpB09qQ=="
   "resolved" "https://registry.npmjs.org/@types/d3-hierarchy/-/d3-hierarchy-3.0.2.tgz"
@@ -704,6 +709,11 @@
   "version" "3.0.1"
   dependencies:
     "d3-array" "2.5.0 - 3"
+
+"d3-hexbin@^0.2.2":
+  "integrity" "sha1-nFg32s/UcasFM3qeke8Qv8T5iDE="
+  "resolved" "https://registry.npmjs.org/d3-hexbin/-/d3-hexbin-0.2.2.tgz"
+  "version" "0.2.2"
 
 "d3-hierarchy@3":
   "integrity" "sha512-LtAIu54UctRmhGKllleflmHalttH3zkfSi4NlKrTAoFKjC+AFBJohsCAdgCBYQwH0F8hIOGY89X1pPqAchlMkA=="

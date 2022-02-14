@@ -7,7 +7,7 @@ import * as L from 'leaflet';
 import {LatLngExpression} from 'leaflet';
 import {useCallback, useEffect, useState} from "react";
 import {BikeCollision} from "../types/bike-collision";
-import {useCSV} from "../hooks/useCSV";
+import {useCSV} from "../hooks/use-csv";
 
 const INITIAL_CENTER: LatLngExpression = {lat: 51.507359, lng: -0.136439};
 const INITIAL_ZOOM: number = 11;
@@ -24,7 +24,7 @@ const Home: NextPage = () => {
   
   const handleMapZoomStateUpdate = useCallback((isZooming: boolean) => {
     setIsZooming(isZooming);
-  }, [])
+  }, []);
   
   useEffect(() => {
     console.log("data", data);
@@ -61,7 +61,8 @@ const Home: NextPage = () => {
         </Head>
         {(data && data.length > 0) ? Main : Loading}
         <footer className={styles.footer}>
-          Data:  <a href={'https://bikedata.cyclestreets.net/collisions/#9.44/51.4814/0.0567'}>Bike Collisions in London</a> (2005-2019),
+          Data: <a href={'https://bikedata.cyclestreets.net/collisions/#9.44/51.4814/0.0567'}>Bike Collisions in
+          London</a> (2005-2019),
           Data Source: <a href={'https://bikedata.cyclestreets.net/collisions/#9.44/51.4814/0.0567'}>CycleStreets</a>
         </footer>
       </div>
