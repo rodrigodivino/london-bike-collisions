@@ -5,7 +5,7 @@ import {CollisionSeverity} from "../../types/collision-severity";
 import {BikeCollision} from "../../types/bike-collision";
 import {getProjectedLayout, ProjectedLayout} from "../../hooks/get-projected-layout";
 import {hexbin} from "d3-hexbin";
-import {extent, scaleLinear} from "d3";
+import {extent, min, scaleLinear} from "d3";
 import {getMetersInPixels} from "../../hooks/get-meters-in-pixels";
 
 const SVGOverlay: FunctionComponent<SVGOverlayTypes.Props> = ({map, data, isZooming}) => {
@@ -21,9 +21,12 @@ const SVGOverlay: FunctionComponent<SVGOverlayTypes.Props> = ({map, data, isZoom
   
   const binRadius = getMetersInPixels(map, 300);
   
+  const relativeBinPoint = projectedData[0];
+  
+  
   const hexbinGenerator = hexbin<ProjectedLayout<BikeCollision>>()
-      .x(d => d.x)
-      .y(d => d.y)
+      .x(d => d.x - relativeBinPoint.x)
+      .y(d => d.y - relativeBinPoint.y)
       .radius(binRadius);
   
   const hexbinData = hexbinGenerator
@@ -40,7 +43,9 @@ const SVGOverlay: FunctionComponent<SVGOverlayTypes.Props> = ({map, data, isZoom
       {
         hexbinData.map((bin, i) => {
           return <g className={styles.hexbin} key={i} transform={`translate(${bin.x},${bin.y})`}>
-            <path fill={hexbinColorScale(bin.length)} d={hexbinGenerator.hexagon(binRadius)}/>
+            <g transform={`translate(${relativeBinPoint.x},${relativeBinPoint.y})`}>
+              <path fill={hexbinColorScale(bin.length)} d={hexbinGenerator.hexagon(binRadius)}/>
+            </g>
           </g>
         })
       }
