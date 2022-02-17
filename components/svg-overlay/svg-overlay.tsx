@@ -8,8 +8,9 @@ import {hexbin} from "d3-hexbin";
 import {extent, max, scaleLinear} from "d3";
 
 const SVGOverlay: FunctionComponent<SVGOverlayTypes.Props> = ({map, data, isZooming}) => {
+  const projectionOrigin = map.project(map.getBounds().getNorthWest());
   const projectedData = getProjectedLayout<BikeCollision>(
-      d => map.latLngToContainerPoint([d.Latitude, d.Longitude]),
+      d => map.project([d.Latitude, d.Longitude]),
       data
   );
   
@@ -46,30 +47,32 @@ const SVGOverlay: FunctionComponent<SVGOverlayTypes.Props> = ({map, data, isZoom
   const visibleHexBinData = hexbinData.filter(b => b.some(d => isProjectedPointVisible(d)));
   const visibleMarkerData = markerData.filter(d => isProjectedPointVisible(d));
   return <svg className={styles.svg}>
-    <g className={`${isZooming ? styles.zooming : ''}`}>
-      {
-        visibleHexBinData.map((bin) => {
-          const key = bin.map(d=>d.d["Accident Index"]).join();
-          
-          return <g className={styles.hexbin} key={key} transform={`translate(${bin.x},${bin.y})`}>
-            <g transform={`translate(${relativeBinPoint.x},${relativeBinPoint.y})`}>
-              <path fill={hexbinColorScale(bin.length)} d={hexbinGenerator.hexagon(binRadius)}/>
-            </g>
-          </g>;
-        })
-      }
-      {
-        visibleMarkerData.map(l => {
-          const color = {
-            [CollisionSeverity.fatal]: 'firebrick',
-            [CollisionSeverity.serious]: 'gold',
-            [CollisionSeverity.slight]: 'mediumseagreen'
-          };
-          return <g key={`${l.d["Accident Index"]}`}>
-            <circle cx={l.x} cy={l.y} r={2} fill={color[l.d.Severity]}/>
-          </g>;
-        })
-      }
+    <g className='projection-translation' transform={`translate(${-projectionOrigin.x},${-projectionOrigin.y})`}>
+      <g className={`${isZooming ? styles.zooming : ''}`}>
+        {
+          visibleHexBinData.map((bin) => {
+            const key = bin.map(d=>d.d["Accident Index"]).join();
+        
+            return <g className={styles.hexbin} key={key} transform={`translate(${bin.x},${bin.y})`}>
+              <g transform={`translate(${relativeBinPoint.x},${relativeBinPoint.y})`}>
+                <path fill={hexbinColorScale(bin.length)} d={hexbinGenerator.hexagon(binRadius)}/>
+              </g>
+            </g>;
+          })
+        }
+        {
+          visibleMarkerData.map(l => {
+            const color = {
+              [CollisionSeverity.fatal]: 'firebrick',
+              [CollisionSeverity.serious]: 'gold',
+              [CollisionSeverity.slight]: 'mediumseagreen'
+            };
+            return <g key={`${l.d["Accident Index"]}`}>
+              <circle cx={l.x} cy={l.y} r={2} fill={color[l.d.Severity]}/>
+            </g>;
+          })
+        }
+      </g>
     </g>
   </svg>;
 };
