@@ -1,4 +1,4 @@
-import {FunctionComponent, useLayoutEffect, useMemo, useState} from "react";
+import {FunctionComponent, useCallback, useLayoutEffect, useMemo, useState} from "react";
 import {SVGOverlayTypes} from "./svg-overlay.types";
 import styles from './svg-overlay.module.css';
 import {CollisionSeverity} from "../../types/collision-severity";
@@ -6,9 +6,14 @@ import {BikeCollision} from "../../types/bike-collision";
 import {getProjectedLayout, ProjectedLayout} from "../../hooks/get-projected-layout";
 import {hexbin} from "d3-hexbin";
 import {extent, max, scaleLinear} from "d3";
+import {LatLngBounds} from "leaflet";
+
+const TMP_IS_VISIBLE = (d: ProjectedLayout<BikeCollision>, mapBounds: LatLngBounds) => mapBounds.contains({
+  lat: d.d.Latitude,
+  lng: d.d.Longitude
+});
 
 const SVGOverlay: FunctionComponent<SVGOverlayTypes.Props> = ({map, data, isZooming}) => {
-  const projectionOrigin = map.project(map.getBounds().getNorthWest());
   
   const [projectedData, setProjectedData] = useState<ProjectedLayout<BikeCollision>[]>([]);
   
@@ -19,36 +24,41 @@ const SVGOverlay: FunctionComponent<SVGOverlayTypes.Props> = ({map, data, isZoom
     ));
   }, [map, data, isZooming]);
   
-  const mapBounds = map.getBounds().pad(0.2);
-  const isProjectedPointVisible = (d: ProjectedLayout<BikeCollision>) => mapBounds.contains({
-    lat: d.d.Latitude,
-    lng: d.d.Longitude
-  });
-  
   const markerFilter = (d: BikeCollision) => d.Severity === CollisionSeverity.fatal;
   const markerData = useMemo(() => projectedData.filter(d => markerFilter(d.d)), [projectedData]);
   const contextData = useMemo(() => projectedData.filter(d => !markerFilter(d.d)), [projectedData]);
   
   const projectionXExtent = useMemo(() => extent(projectedData, d => d.x) as [number, number], [projectedData]);
   
+  const relativeBinPoint = projectedData[0] ?? {x: 0, y: 0};
   const binRadius = (projectionXExtent[1] - projectionXExtent[0]) / 200;
-  const relativeBinPoint = projectedData[0];
-  const hexbinGenerator = hexbin<ProjectedLayout<BikeCollision>>()
-      .x(d => d.x - relativeBinPoint.x)
-      .y(d => d.y - relativeBinPoint.y)
-      .radius(binRadius);
   
-  const hexbinData = hexbinGenerator(contextData.filter(isProjectedPointVisible));
+  const hexbinData = useMemo(() => {
+    return hexbin<ProjectedLayout<BikeCollision>>()
+        .x(d => d.x - relativeBinPoint.x)
+        .y(d => d.y - relativeBinPoint.y)
+        .radius(binRadius)
+        (contextData);
+  }, [contextData, binRadius, relativeBinPoint.x, relativeBinPoint.y]);
+  
   
   const maxHexBinValue = max(hexbinData, b => b.length) as number;
   
   const hexbinColorScale = scaleLinear<string, string>()
       .domain([0, maxHexBinValue])
       .range(['#FFFFFF00', '#B2222277']);
+  const s = performance.now();
   
   
-  const visibleHexBinData = hexbinData.filter(b => b.some(d => isProjectedPointVisible(d)));
-  const visibleMarkerData = markerData.filter(d => isProjectedPointVisible(d));
+  const visibleHexBinData = hexbinData//;.filter(b => b.some(d => TMP_IS_VISIBLE(d, map.getBounds())));
+  const visibleMarkerData = markerData//;.filter(d => TMP_IS_VISIBLE(d, map.getBounds()));
+  
+  
+  const e = performance.now();
+  
+  console.log('main: ', (e - s) + 'ms');
+  
+  const projectionOrigin = map.project(map.getBounds().getNorthWest());
   
   return <svg className={styles.svg}>
     <g className="projection-translation" transform={`translate(${-projectionOrigin.x},${-projectionOrigin.y})`}>
