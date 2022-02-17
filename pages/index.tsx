@@ -5,10 +5,11 @@ import SharedLeafletMapNoNextSSR from "../components/shared-leaflet-map/shared-l
 import SVGOverlay from "../components/svg-overlay/svg-overlay";
 import * as L from 'leaflet';
 import {LatLngExpression} from 'leaflet';
-import {useCallback, useEffect, useState} from "react";
+import {useCallback, useEffect, useMemo, useState} from "react";
 import {BikeCollision} from "../types/bike-collision";
 import {useCSV} from "../hooks/use-csv";
 import SVGOverlayNoNextSSR from "../components/svg-overlay/svg-overlay-no-next-ssr";
+import CanvasOverlayNoNextSSR from "../components/canvas-overlay/canvas-overlay-no-next-ssr";
 
 const INITIAL_CENTER: LatLngExpression = {lat: 51.507359, lng: -0.136439};
 const INITIAL_ZOOM: number = 11;
@@ -27,9 +28,8 @@ const Home: NextPage = () => {
     setIsZooming(isZooming);
   }, []);
   
-  useEffect(() => {
-    console.log("data", data);
-  }, [data]);
+  const markerData = useMemo(() => data?.filter(d => d.Severity === 'fatal'), [data])
+  const contextData = useMemo(() => data?.filter(d => d.Severity !== 'fatal'), [data])
   
   const Main = <main className={styles.main}>
     <h1>London Bike Collisions</h1>
@@ -44,7 +44,10 @@ const Home: NextPage = () => {
         />
       </div>
       <div className={styles.layer}>
-        {map && <SVGOverlayNoNextSSR map={map} data={data ?? []} isZooming={isZooming}/>}
+        {map && <CanvasOverlayNoNextSSR map={map} data={contextData ?? []} isZooming={isZooming}/>}
+      </div>
+      <div className={styles.layer}>
+        {map && <SVGOverlayNoNextSSR map={map} data={markerData ?? []} isZooming={isZooming}/>}
       </div>
     </div>
   </main>;

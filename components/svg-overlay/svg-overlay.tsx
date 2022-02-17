@@ -29,16 +29,19 @@ const SVGOverlay: FunctionComponent<SVGOverlayTypes.Props> = ({map, data, isZoom
   const hexbinData = useMemo(() => {
     const relativeBinPoint = contextData[0] ?? {x: 0, y: 0};
   
-    const binData = hexbin<ProjectedLayout<BikeCollision>>()
+    const binGenerator = hexbin<ProjectedLayout<BikeCollision>>()
         .x(d => d.x - relativeBinPoint.x)
         .y(d => d.y - relativeBinPoint.y)
         .radius(binRadius)
+    
+    const binData = binGenerator
         (contextData);
     
     binData.forEach(bin => {
       bin.x += relativeBinPoint.x;
       bin.y += relativeBinPoint.y;
     })
+    
     
     return binData;
   }, [contextData, binRadius]);
@@ -52,6 +55,7 @@ const SVGOverlay: FunctionComponent<SVGOverlayTypes.Props> = ({map, data, isZoom
   
   
   
+  
   const projectionOrigin = map.project(map.getBounds().getNorthWest());
   
   return <svg className={styles.svg}>
@@ -59,7 +63,7 @@ const SVGOverlay: FunctionComponent<SVGOverlayTypes.Props> = ({map, data, isZoom
       <g className={`${isZooming ? styles.zooming : ''}`}>
         
         <g className="context">
-          <MemoizedHexBin hexBinData={hexbinData} hexbinColorScale={hexbinColorScale} binRadius={binRadius}/>
+          {/*<MemoizedHexBin hexBinData={hexbinData} hexbinColorScale={hexbinColorScale} binRadius={binRadius}/>*/}
         </g>
         
         <g className="marker">
