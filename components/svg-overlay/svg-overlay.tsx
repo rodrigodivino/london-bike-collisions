@@ -24,7 +24,7 @@ const SVGOverlay: FunctionComponent<SVGOverlayTypes.Props> = ({map, data, isZoom
   
   const projectionXExtent = useMemo(() => extent(projectedData, d => d.x) as [number, number], [projectedData]);
   
-  const binRadius = (projectionXExtent[1] - projectionXExtent[0]) / 100;
+  const binRadius = (projectionXExtent[1] - projectionXExtent[0]) / 200;
   
   const hexbinData = useMemo(() => {
     const relativeBinPoint = contextData[0] ?? {x: 0, y: 0};
