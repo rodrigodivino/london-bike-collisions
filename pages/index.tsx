@@ -1,15 +1,15 @@
 import type {NextPage} from 'next';
 import Head from 'next/head';
 import styles from '../styles/Home.module.css';
-import SharedLeafletMapNoNextSSR from "../components/shared-leaflet-map/shared-leaflet-map-no-next-ssr";
-import SVGOverlay from "../components/svg-overlay/svg-overlay";
+import SharedLeafletMapNoNextSSR from "../components/shared-module/shared-leaflet-map/shared-leaflet-map-no-next-ssr";
+import SVGOverlay from "../components/bike-collisions-module/svg-overlay/svg-overlay";
 import * as L from 'leaflet';
 import {LatLngExpression} from 'leaflet';
 import {useCallback, useEffect, useMemo, useState} from "react";
 import {BikeCollision} from "../types/bike-collision";
 import {useCSV} from "../hooks/use-csv";
-import SVGOverlayNoNextSSR from "../components/svg-overlay/svg-overlay-no-next-ssr";
-import CanvasOverlayNoNextSSR from "../components/canvas-overlay/canvas-overlay-no-next-ssr";
+import SVGOverlayNoNextSSR from "../components/bike-collisions-module/svg-overlay/svg-overlay-no-next-ssr";
+import CanvasOverlayNoNextSSR from "../components/bike-collisions-module/canvas-overlay/canvas-overlay-no-next-ssr";
 
 const INITIAL_CENTER: LatLngExpression = {lat: 51.507359, lng: -0.136439};
 const INITIAL_ZOOM: number = 11;

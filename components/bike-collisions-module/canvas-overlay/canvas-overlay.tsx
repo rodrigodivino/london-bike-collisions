@@ -1,10 +1,10 @@
 import {FunctionComponent, useLayoutEffect, useMemo, useState} from "react";
 import {CanvasOverlayTypes} from "./canvas-overlay.types";
 import styles from './canvas-overlay.module.css';
-import {useQuickDOMRef} from "../../hooks/use-quick-dom-ref";
-import {useResponsiveMural} from "../../hooks/use-responsive-mural";
-import {getProjectedLayout, ProjectedLayout} from "../../hooks/get-projected-layout";
-import {BikeCollision} from "../../types/bike-collision";
+import {useQuickDOMRef} from "../../../hooks/use-quick-dom-ref";
+import {useResponsiveMural} from "../../../hooks/use-responsive-mural";
+import {getProjectedLayout, ProjectedLayout} from "../../../hooks/get-projected-layout";
+import {BikeCollision} from "../../../types/bike-collision";
 import {hexbin} from "d3-hexbin";
 import {extent, max, scaleLinear} from "d3";
 import {CanvasOverlayConst} from "./canvas-overlay.const";

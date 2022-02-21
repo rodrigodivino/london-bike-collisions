@@ -1,7 +1,7 @@
 import {Map as LMap} from "leaflet";
-import {BikeCollision} from "../../types/bike-collision";
+import {BikeCollision} from "../../../types/bike-collision";
 
-export namespace SVGOverlayTypes {
+export namespace CanvasOverlayTypes {
   export interface Props {
     map: LMap;
     data: BikeCollision[];

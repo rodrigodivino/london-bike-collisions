@@ -1,9 +1,9 @@
 import {FunctionComponent, useEffect, useRef} from "react";
 import {SharedLeafletMapTypes} from "./shared-leaflet-map.types";
 import styles from './shared-leaflet-map.module.css';
-import {useMapInitialization} from "../../hooks/use-map-initialization";
-import {useMapMoveEvent} from "../../hooks/use-map-move-event";
-import {useMapZoomStateEvent} from "../../hooks/use-map-zoom-state-event";
+import {useMapInitialization} from "../../../hooks/use-map-initialization";
+import {useMapMoveEvent} from "../../../hooks/use-map-move-event";
+import {useMapZoomStateEvent} from "../../../hooks/use-map-zoom-state-event";
 
 const SharedLeafletMap: FunctionComponent<SharedLeafletMapTypes.Props> = (
     {

@@ -1,8 +1,8 @@
 import {FunctionComponent, memo, useLayoutEffect, useState} from "react";
 import {SVGOverlayTypes} from "./svg-overlay.types";
 import styles from './svg-overlay.module.css';
-import {BikeCollision} from "../../types/bike-collision";
-import {getProjectedLayout, ProjectedLayout} from "../../hooks/get-projected-layout";
+import {BikeCollision} from "../../../types/bike-collision";
+import {getProjectedLayout, ProjectedLayout} from "../../../hooks/get-projected-layout";
 
 const SVGOverlay: FunctionComponent<SVGOverlayTypes.Props> = ({map, data, isZooming}) => {
   const [projectedData, setProjectedData] = useState<ProjectedLayout<BikeCollision>[]>([]);
@@ -20,7 +20,14 @@ const SVGOverlay: FunctionComponent<SVGOverlayTypes.Props> = ({map, data, isZoom
     <g className="projection-translation" transform={`translate(${-projectionOrigin.x},${-projectionOrigin.y})`}>
       <g className={`${isZooming ? styles.zooming : ''}`}>
         <g className="marker">
-          <MemoizedMarker data={projectedData}/>
+          {
+            projectedData.map((l) => {
+              return <g key={`${l.d["Accident Index"]}`}>
+                <circle cx={l.x} cy={l.y} r={2} fill={'#555551'}/>
+                {/*<path className={styles.marker} d={`M${l.x},${l.y}l0,-5`}/>*/}
+              </g>;
+            })
+          }
         </g>
       </g>
     </g>
@@ -28,19 +35,5 @@ const SVGOverlay: FunctionComponent<SVGOverlayTypes.Props> = ({map, data, isZoom
 };
 
 export default SVGOverlay;
-
-
-const Marker = ({data}: any): JSX.Element => {
-  return <>
-    {
-      data.map((l: any) => {
-        return <g key={`${l.d["Accident Index"]}`}>
-          <circle cx={l.x} cy={l.y} r={2} fill={'#555551'}/>
-        </g>;
-      })
-    }</>;
-};
-
-const MemoizedMarker = memo(Marker);
 
 
