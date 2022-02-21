@@ -1,4 +1,4 @@
-import {FunctionComponent, memo, useLayoutEffect, useState} from "react";
+import {FunctionComponent, useLayoutEffect, useMemo, useState} from "react";
 import {SVGOverlayTypes} from "./svg-overlay.types";
 import styles from './svg-overlay.module.css';
 import {BikeCollision} from "../../../types/bike-collision";
@@ -14,22 +14,24 @@ const SVGOverlay: FunctionComponent<SVGOverlayTypes.Props> = ({map, data, isZoom
     ));
   }, [map, data, isZooming]);
   
+  
   const projectionOrigin = map.project(map.getBounds().getNorthWest());
   
+  const SVGProjectedData = useMemo(() => {
+    return projectedData.map(d => ({...d, x: d.x - projectionOrigin.x, y: d.y - projectionOrigin.y}))
+  }, [projectedData, projectionOrigin.x, projectionOrigin.y])
+  
   return <svg className={styles.svg}>
-    <g className="projection-translation" transform={`translate(${-projectionOrigin.x},${-projectionOrigin.y})`}>
       <g className={`${isZooming ? styles.zooming : ''}`}>
         <g className="marker">
           {
-            projectedData.map((l) => {
+            SVGProjectedData.map((l) => {
               return <g key={`${l.d["Accident Index"]}`}>
-                <circle cx={l.x} cy={l.y} r={2} fill={'#555551'}/>
-                {/*<path className={styles.marker} d={`M${l.x},${l.y}l0,-5`}/>*/}
+                <circle pointerEvents='auto' cx={l.x} cy={l.y} r={10} fill={'#555551'}/>
               </g>;
             })
           }
         </g>
-      </g>
     </g>
   </svg>;
 };
