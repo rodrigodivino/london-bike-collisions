@@ -7,6 +7,7 @@ import {getProjectedLayout, ProjectedLayout} from "../../hooks/get-projected-lay
 import {BikeCollision} from "../../types/bike-collision";
 import {hexbin} from "d3-hexbin";
 import {extent, max, scaleLinear} from "d3";
+import {CanvasOverlayConst} from "./canvas-overlay.const";
 
 const CanvasOverlay: FunctionComponent<CanvasOverlayTypes.Props> = ({map, data, isZooming}) => {
   const [canvas, canvasRef] = useQuickDOMRef<HTMLCanvasElement>();
@@ -24,7 +25,7 @@ const CanvasOverlay: FunctionComponent<CanvasOverlayTypes.Props> = ({map, data, 
       () => extent(projectedContextData, d => d.x) as [number, number], [projectedContextData]
   );
   
-  const binRadius = (projectionXExtent[1] - projectionXExtent[0]) / 300;
+  const binRadius = (projectionXExtent[1] - projectionXExtent[0]) / CanvasOverlayConst.BIN_RADIUS_FACTOR;
   
   const [hexbinData, hexagonPathString] = useMemo(() => {
     const relativeBinPoint = projectedContextData[0] ?? {x: 0, y: 0};
@@ -41,50 +42,56 @@ const CanvasOverlay: FunctionComponent<CanvasOverlayTypes.Props> = ({map, data, 
       bin.y += relativeBinPoint.y;
     });
     
-    return [binData, binGenerator.hexagon()];
+    const filteredBinData = binData.filter(b => b.length >= CanvasOverlayConst.MINIMUM_VISIBLE_BIN_SIZE);
+    
+    return [filteredBinData, binGenerator.hexagon()];
   }, [projectedContextData, binRadius]);
+  
   
   const hexbinColorScale = useMemo(() => {
     return scaleLinear<string, string>()
         .domain([0, max(hexbinData, b => b.length) as number])
-        .range(['#FFFFFF00', '#B2222277']);
+        .range(['#B2222200', '#B22222E0']);
   }, [hexbinData]);
   
   
   const projectionOrigin = map.project(map.getBounds().getNorthWest());
   
-  
   const hexagonPath2D = new Path2D(hexagonPathString);
   
   const ctx = canvas?.getContext('2d');
   
-  
-  // TODO: Render in an offscreen canvas once per zoom level, and copy translated to the visible canvas on pan events
-  if(ctx) {
+  if (ctx) {
     ctx.resetTransform();
     ctx.clearRect(0, 0, width, height);
     ctx.translate(-projectionOrigin.x, -projectionOrigin.y);
-  
-    for (let bin of hexbinData) {
-      if((bin.x - projectionOrigin.x) < - 2 * binRadius) continue;
-      if((bin.x - projectionOrigin.x) > width + 2 * binRadius) continue;
-      if((bin.y - projectionOrigin.y) < - 2 * binRadius) continue;
-      if((bin.y - projectionOrigin.y) > height + 2 * binRadius) continue;
     
+    for (let bin of hexbinData) {
+      if ((bin.x - projectionOrigin.x) < -2 * binRadius) {
+        continue;
+      }
+      if ((bin.x - projectionOrigin.x) > width + 2 * binRadius) {
+        continue;
+      }
+      if ((bin.y - projectionOrigin.y) < -2 * binRadius) {
+        continue;
+      }
+      if ((bin.y - projectionOrigin.y) > height + 2 * binRadius) {
+        continue;
+      }
+      
       ctx.translate(bin.x, bin.y);
       
       ctx.fillStyle = hexbinColorScale(bin.length);
       
-    
+      
       ctx.fill(hexagonPath2D);
       ctx.translate(-bin.x, -bin.y);
     }
   }
   
   
-  
-  
-  return <canvas key="canvas" width={width} height={height} ref={canvasRef}
+  return <canvas key="canvas" width={width} height={height} ref={canvasRef} style={{filter: `blur(${binRadius / 2}px)`}}
                  className={`${styles.canvas} ${isZooming ? styles.zooming : ''}`}>
   
   </canvas>;
