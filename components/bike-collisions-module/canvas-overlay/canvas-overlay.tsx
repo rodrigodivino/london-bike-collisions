@@ -6,8 +6,9 @@ import {useResponsiveMural} from "../../../hooks/use-responsive-mural";
 import {getProjectedLayout, ProjectedLayout} from "../../../hooks/get-projected-layout";
 import {BikeCollision} from "../../../types/bike-collision";
 import {hexbin} from "d3-hexbin";
-import {extent, max, scaleLinear} from "d3";
+import {bisect, extent, interpolateReds, max, range, rgb, scaleLinear} from "d3";
 import {CanvasOverlayConst} from "./canvas-overlay.const";
+import {CollisionSeverity} from "../../../types/collision-severity";
 
 const CanvasOverlay: FunctionComponent<CanvasOverlayTypes.Props> = ({map, data, isZooming}) => {
   const [canvas, canvasRef] = useQuickDOMRef<HTMLCanvasElement>();
@@ -42,17 +43,20 @@ const CanvasOverlay: FunctionComponent<CanvasOverlayTypes.Props> = ({map, data, 
       bin.y += relativeBinPoint.y;
     });
     
-    const filteredBinData = binData.filter(b => b.length >= CanvasOverlayConst.MINIMUM_VISIBLE_BIN_SIZE);
-    
-    return [filteredBinData, binGenerator.hexagon()];
+    return [binData, binGenerator.hexagon()];
   }, [projectedContextData, binRadius]);
   
+  const maxBinValue = max(hexbinData, b => b.length) as number;
+  const amountOfBuckets = Math.ceil(maxBinValue / CanvasOverlayConst.COLOR_BUCKET_SIZE);
+  const colorLevels = range(amountOfBuckets + 1).map(i => i * CanvasOverlayConst.COLOR_BUCKET_SIZE);
   
-  const hexbinColorScale = useMemo(() => {
-    return scaleLinear<string, string>()
-        .domain([0, max(hexbinData, b => b.length) as number])
-        .range(['#B2222200', '#B22222E0']);
-  }, [hexbinData]);
+  const colors = colorLevels
+      .map((l, i) => i / (colorLevels.length - 1))
+      .map(v => {
+        const c = rgb(interpolateReds(0.2 + v * 0.8));
+        c.opacity = 0.8;
+        return c.toString();
+      });
   
   
   const projectionOrigin = map.project(map.getBounds().getNorthWest());
@@ -66,7 +70,10 @@ const CanvasOverlay: FunctionComponent<CanvasOverlayTypes.Props> = ({map, data, 
     ctx.clearRect(0, 0, width, height);
     ctx.translate(-projectionOrigin.x, -projectionOrigin.y);
     
-    for (let bin of hexbinData) {
+    ctx.strokeStyle = 'black';
+    
+    for (let i = 0; i < hexbinData.length; i++) {
+      const bin = hexbinData[i];
       if ((bin.x - projectionOrigin.x) < -2 * binRadius) {
         continue;
       }
@@ -80,18 +87,31 @@ const CanvasOverlay: FunctionComponent<CanvasOverlayTypes.Props> = ({map, data, 
         continue;
       }
       
+      const bucketLevel = bisect(colorLevels, bin.length) - 1;
+      
+      if (bucketLevel < 1) {
+        continue;
+      }
+      
       ctx.translate(bin.x, bin.y);
       
-      ctx.fillStyle = hexbinColorScale(bin.length);
-      
-      
+      ctx.fillStyle = colors[bucketLevel];
       ctx.fill(hexagonPath2D);
+  
+      if(bin.some(b => b.d.Severity === CollisionSeverity.fatal)) {
+        const scale = 2;
+        ctx.scale(1 / scale, 1 / scale)
+        ctx.fillStyle = '#222221';
+        ctx.fill(hexagonPath2D);
+        ctx.scale(scale, scale)
+      }
+   
       ctx.translate(-bin.x, -bin.y);
     }
   }
   
   
-  return <canvas key="canvas" width={width} height={height} ref={canvasRef} style={{filter: `blur(${binRadius / 2}px)`}}
+  return <canvas key="canvas" width={width} height={height} ref={canvasRef}
                  className={`${styles.canvas} ${isZooming ? styles.zooming : ''}`}>
   
   </canvas>;

@@ -29,7 +29,7 @@ const Home: NextPage = () => {
   }, []);
   
   const markerData = useMemo(() => data?.filter(d => d.Severity === CollisionSeverity.fatal), [data])
-  const contextData = useMemo(() => data?.filter(d => d.Severity !== CollisionSeverity.fatal), [data])
+  const contextData = useMemo(() => data, [data])
   
   const Main = <main className={styles.main}>
     <h1>London Bike Collisions</h1>
