@@ -6,7 +6,7 @@ import {useResponsiveMural} from "../../../hooks/use-responsive-mural";
 import {getProjectedLayout, ProjectedLayout} from "../../../hooks/get-projected-layout";
 import {BikeCollision} from "../../../types/bike-collision";
 import {hexbin} from "d3-hexbin";
-import {bisect, extent, interpolateReds, max, range, rgb, scaleLinear} from "d3";
+import {color, extent, interpolateReds, max, range, rgb, scaleThreshold} from "d3";
 import {CanvasOverlayConst} from "./canvas-overlay.const";
 import {CollisionSeverity} from "../../../types/collision-severity";
 
@@ -46,17 +46,19 @@ const CanvasOverlay: FunctionComponent<CanvasOverlayTypes.Props> = ({map, data, 
     return [binData, binGenerator.hexagon()];
   }, [projectedContextData, binRadius]);
   
-  const maxBinValue = max(hexbinData, b => b.length) as number;
-  const amountOfBuckets = Math.ceil(maxBinValue / CanvasOverlayConst.COLOR_BUCKET_SIZE);
-  const colorLevels = range(amountOfBuckets + 1).map(i => i * CanvasOverlayConst.COLOR_BUCKET_SIZE);
+  const maxBinLength = max(hexbinData, b => b.length) as number;
+  const colorThresholds = range(Math.ceil(maxBinLength / CanvasOverlayConst.COLOR_THRESHOLD_STEP) + 1)
+      .map(d => d * CanvasOverlayConst.COLOR_THRESHOLD_STEP);
   
-  const colors = colorLevels
-      .map((l, i) => i / (colorLevels.length - 1))
-      .map(v => {
-        const c = rgb(interpolateReds(0.2 + v * 0.8));
-        c.opacity = 0.8;
-        return c.toString();
-      });
+  const bucketColors = colorThresholds.slice(0, -1).map((t, i, a) => {
+    const v = i / (a.length - 1);
+    const c = rgb(interpolateReds(0.1 + v * 0.9));
+    c.opacity = 0.75;
+    return c.toString();
+  });
+  const colorScale = scaleThreshold<number, string>()
+      .domain(colorThresholds as any)
+      .range(['blue', ...bucketColors, 'red']);
   
   
   const projectionOrigin = map.project(map.getBounds().getNorthWest());
@@ -87,25 +89,23 @@ const CanvasOverlay: FunctionComponent<CanvasOverlayTypes.Props> = ({map, data, 
         continue;
       }
       
-      const bucketLevel = bisect(colorLevels, bin.length) - 1;
-      
-      if (bucketLevel < 1) {
+      if (bin.length < colorScale.domain()[1]) {
         continue;
       }
       
       ctx.translate(bin.x, bin.y);
       
-      ctx.fillStyle = colors[bucketLevel];
+      ctx.fillStyle = colorScale(bin.length);
       ctx.fill(hexagonPath2D);
-  
-      if(bin.some(b => b.d.Severity === CollisionSeverity.fatal)) {
+      
+      if (bin.some(b => b.d.Severity === CollisionSeverity.fatal)) {
         const scale = 2;
-        ctx.scale(1 / scale, 1 / scale)
-        ctx.fillStyle = '#222221';
+        ctx.scale(1 / scale, 1 / scale);
+        ctx.fillStyle = '#212121';
         ctx.fill(hexagonPath2D);
-        ctx.scale(scale, scale)
+        ctx.scale(scale, scale);
       }
-   
+      
       ctx.translate(-bin.x, -bin.y);
     }
   }

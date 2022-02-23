@@ -12,7 +12,7 @@ import CanvasOverlayNoNextSSR from "../components/bike-collisions-module/canvas-
 import {CollisionSeverity} from "../types/collision-severity";
 
 const INITIAL_CENTER: LatLngExpression = {lat: 51.507359, lng: -0.136439};
-const INITIAL_ZOOM: number = 11;
+const INITIAL_ZOOM: number = 12;
 
 const Home: NextPage = () => {
   const data = useCSV<BikeCollision>('/data/bike_collisions.csv');
