@@ -27,7 +27,7 @@ const SVGOverlay: FunctionComponent<SVGOverlayTypes.Props> = ({map, data, isZoom
           {
             SVGProjectedData.map((l) => {
               return <g key={`${l.d["Accident Index"]}`}>
-                <circle pointerEvents='auto' cx={l.x} cy={l.y} r={10} fill={'#555551'}/>
+                <circle className={styles.marker} cx={l.x} cy={l.y} r={2}/>
               </g>;
             })
           }
