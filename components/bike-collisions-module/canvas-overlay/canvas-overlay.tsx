@@ -8,6 +8,7 @@ import {BikeCollision} from "../../../types/bike-collision";
 import {hexbin} from "d3-hexbin";
 import {extent, interpolateReds, max, range, rgb, scaleThreshold} from "d3";
 import {CanvasOverlayConst} from "./canvas-overlay.const";
+import {LatLng} from "leaflet";
 
 const CanvasOverlay: FunctionComponent<CanvasOverlayTypes.Props> = ({map, data, isZooming}) => {
   const [canvas, canvasRef] = useQuickDOMRef<HTMLCanvasElement>();
@@ -21,11 +22,9 @@ const CanvasOverlay: FunctionComponent<CanvasOverlayTypes.Props> = ({map, data, 
     ));
   }, [map, data, isZooming]);
   
-  const projectionXExtent = useMemo(
-      () => extent(projectedContextData, d => d.x) as [number, number], [projectedContextData]
-  );
   
-  const binRadius = (projectionXExtent[1] - projectionXExtent[0]) / CanvasOverlayConst.BIN_RADIUS_FACTOR;
+  const bounds = new LatLng(data[0].Latitude, data[0].Longitude).toBounds(CanvasOverlayConst.BIN_RADIUS_METERS)
+  const binRadius = Math.abs(map.project(bounds.getNorthEast()).x - map.project(bounds.getNorthWest()).x)
   
   const [hexbinData, hexagonPathString] = useMemo(() => {
     const relativeBinPoint = projectedContextData[0] ?? {x: 0, y: 0};
@@ -46,13 +45,19 @@ const CanvasOverlay: FunctionComponent<CanvasOverlayTypes.Props> = ({map, data, 
   }, [projectedContextData, binRadius]);
   
   const maxBinLength = max(hexbinData, b => b.length) as number;
+  
   const colorThresholds = range(Math.ceil(maxBinLength / CanvasOverlayConst.COLOR_THRESHOLD_STEP) + 1)
-      .map(d => d * CanvasOverlayConst.COLOR_THRESHOLD_STEP);
+      .map(d => d * CanvasOverlayConst.COLOR_THRESHOLD_STEP + CanvasOverlayConst.MINIMUM_VISIBLE_HEX_VALUE);
+  
+  
+  
+  console.log("maxBinLength", maxBinLength);
+  console.log("colorThresholds", colorThresholds);
   
   const bucketColors = colorThresholds.slice(0, -1).map((t, i, a) => {
     const v = i / (a.length - 1);
-    const c = rgb(interpolateReds(0.1 + v * 0.9));
-    c.opacity = 0.5;
+    const c = rgb(interpolateReds(0.15 + v * 0.85));
+    c.opacity = 0.4;
     return c.toString();
   });
   const colorScale = scaleThreshold<number, string>()
@@ -86,7 +91,7 @@ const CanvasOverlay: FunctionComponent<CanvasOverlayTypes.Props> = ({map, data, 
         continue;
       }
       
-      if (bin.length < colorScale.domain()[1]) {
+      if (bin.length < CanvasOverlayConst.MINIMUM_VISIBLE_HEX_VALUE) {
         continue;
       }
       

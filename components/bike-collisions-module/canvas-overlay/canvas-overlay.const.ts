@@ -1,4 +1,5 @@
 export namespace CanvasOverlayConst {
-  export const COLOR_THRESHOLD_STEP = 10;
-  export const BIN_RADIUS_FACTOR = 300;
+  export const COLOR_THRESHOLD_STEP = 80;
+  export const MINIMUM_VISIBLE_HEX_VALUE = 30;
+  export const BIN_RADIUS_METERS = 250;
 }
