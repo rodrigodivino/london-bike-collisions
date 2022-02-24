@@ -6,9 +6,8 @@ import {useResponsiveMural} from "../../../hooks/use-responsive-mural";
 import {getProjectedLayout, ProjectedLayout} from "../../../hooks/get-projected-layout";
 import {BikeCollision} from "../../../types/bike-collision";
 import {hexbin} from "d3-hexbin";
-import {color, extent, interpolateReds, max, range, rgb, scaleThreshold} from "d3";
+import {extent, interpolateReds, max, range, rgb, scaleThreshold} from "d3";
 import {CanvasOverlayConst} from "./canvas-overlay.const";
-import {CollisionSeverity} from "../../../types/collision-severity";
 
 const CanvasOverlay: FunctionComponent<CanvasOverlayTypes.Props> = ({map, data, isZooming}) => {
   const [canvas, canvasRef] = useQuickDOMRef<HTMLCanvasElement>();
@@ -53,7 +52,7 @@ const CanvasOverlay: FunctionComponent<CanvasOverlayTypes.Props> = ({map, data, 
   const bucketColors = colorThresholds.slice(0, -1).map((t, i, a) => {
     const v = i / (a.length - 1);
     const c = rgb(interpolateReds(0.1 + v * 0.9));
-    c.opacity = 0.75;
+    c.opacity = 0.5;
     return c.toString();
   });
   const colorScale = scaleThreshold<number, string>()
@@ -71,8 +70,6 @@ const CanvasOverlay: FunctionComponent<CanvasOverlayTypes.Props> = ({map, data, 
     ctx.resetTransform();
     ctx.clearRect(0, 0, width, height);
     ctx.translate(-projectionOrigin.x, -projectionOrigin.y);
-    
-    ctx.strokeStyle = 'black';
     
     for (let i = 0; i < hexbinData.length; i++) {
       const bin = hexbinData[i];
@@ -98,23 +95,18 @@ const CanvasOverlay: FunctionComponent<CanvasOverlayTypes.Props> = ({map, data, 
       ctx.fillStyle = colorScale(bin.length);
       ctx.fill(hexagonPath2D);
       
-      if (bin.some(b => b.d.Severity === CollisionSeverity.fatal)) {
-        const scale = 2;
-        ctx.scale(1 / scale, 1 / scale);
-        ctx.fillStyle = '#212121';
-        ctx.fill(hexagonPath2D);
-        ctx.scale(scale, scale);
-      }
-      
       ctx.translate(-bin.x, -bin.y);
+      
     }
   }
   
   
-  return <canvas key="canvas" width={width} height={height} ref={canvasRef}
-                 className={`${styles.canvas} ${isZooming ? styles.zooming : ''}`}>
-  
-  </canvas>;
+  return <div className={styles.wrapper}>
+    <canvas key="canvas" width={width} height={height} ref={canvasRef}
+            className={`${styles.canvas} ${isZooming ? styles.zooming : ''}`}>
+    
+    </canvas>
+  </div>;
 };
 
 export default CanvasOverlay;
