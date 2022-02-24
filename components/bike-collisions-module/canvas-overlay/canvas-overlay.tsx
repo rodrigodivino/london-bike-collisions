@@ -46,8 +46,9 @@ const CanvasOverlay: FunctionComponent<CanvasOverlayTypes.Props> = ({map, data, 
   
   const maxBinLength = max(hexbinData, b => b.length) as number;
   
+  // TODO: Improve color logic to be able to select amount of colors and still have meaningful steps as buckets
   const colorThresholds = range(Math.ceil(maxBinLength / CanvasOverlayConst.COLOR_THRESHOLD_STEP) + 1)
-      .map(d => d * CanvasOverlayConst.COLOR_THRESHOLD_STEP + CanvasOverlayConst.MINIMUM_VISIBLE_HEX_VALUE);
+      .map(d => d * CanvasOverlayConst.COLOR_THRESHOLD_STEP + CanvasOverlayConst.MINIMUM_VISIBLE_HEX_VALUE)
   
   
   
