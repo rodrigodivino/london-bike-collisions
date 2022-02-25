@@ -16,8 +16,20 @@
     stroke: none;
 }
 
-.marker {
+.markerSevere {
     fill:  #212121;
+    stroke: #212121;
+    stroke-width: 1px;
+}
+
+.seriousCircleMesh {
+    fill:  none;
+    stroke: #212121;
+    stroke-width: 1px;
+}
+
+.fatalCircleMesh {
+    fill: #212121;
     stroke: #212121;
     stroke-width: 1px;
 }

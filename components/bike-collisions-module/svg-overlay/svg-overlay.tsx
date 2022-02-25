@@ -1,20 +1,18 @@
-import {FunctionComponent, useEffect, useLayoutEffect, useMemo, useState} from "react";
+import {FunctionComponent, useLayoutEffect, useMemo, useRef, useState} from "react";
 import {SVGOverlayTypes} from "./svg-overlay.types";
 import styles from './svg-overlay.module.css';
 import {BikeCollision} from "../../../types/bike-collision";
 import {getProjectedLayout, ProjectedLayout} from "../../../hooks/get-projected-layout";
-import {useQuickDOMRef} from "../../../hooks/use-quick-dom-ref";
 import {useResponsiveMural} from "../../../hooks/use-responsive-mural";
 import {CollisionSeverity} from "../../../types/collision-severity";
-import {marker} from "leaflet";
 
 const SVGOverlay: FunctionComponent<SVGOverlayTypes.Props> = ({map, data, isZooming}) => {
   const [projectedData, setProjectedData] = useState<ProjectedLayout<BikeCollision>[]>([]);
-  const [svg, svgRef] = useQuickDOMRef<SVGSVGElement>();
+  const svgRef = useRef<SVGSVGElement>(null);
   const [width, height] = useResponsiveMural(svgRef);
   
   useLayoutEffect(() => {
-    if (map.getZoom() >= 16) {
+    if (map.getZoom() >= 13) {
       setProjectedData(getProjectedLayout<BikeCollision>(
           d => map.project([d.Latitude, d.Longitude]),
           data
@@ -34,16 +32,29 @@ const SVGOverlay: FunctionComponent<SVGOverlayTypes.Props> = ({map, data, isZoom
     
   }, [projectedData, projectionOrigin.x, projectionOrigin.y, width, height])
   
+  function circlePath(cx: number, cy: number, r: number){
+    return 'M '+cx+' '+cy+' m -'+r+', 0 a '+r+','+r+' 0 1,0 '+(r*2)+',0 a '+r+','+r+' 0 1,0 -'+(r*2)+',0';
+  }
+  
+  const seriousCircleMesh = SVGProjectedData.filter(d => d.d.Severity === CollisionSeverity.serious).map(l => circlePath(l.x, l.y, 2)).join('')
+  const fatalCircleMesh = SVGProjectedData.filter(d => d.d.Severity === CollisionSeverity.fatal).map(l => circlePath(l.x, l.y, 4)).join('')
+  
+  // TODO: Add fatal markers at a lower zoom level
+  // TODO: Add serious markers at a even lower zoom level
+  // TODO: Adjust optimization of projection to the fatal marker zoom level
+  // TODO: Add zoom level visibilities to const
+  // TODO: Generalize mesh variable names
+  // TODO: Limit zoom levels to first tile change road
+  
   return <svg ref={svgRef} className={styles.svg}>
       <g className={`${isZooming ? styles.zooming : ''}`}>
         <g className="marker">
-          {
-            SVGProjectedData.map((l) => {
-              return <g key={`${l.d["Accident Index"]}`}>
-                <circle className={styles.marker} cx={l.x} cy={l.y} r={2}/>
-              </g>;
-            })
-          }
+          <g>
+            <path className={styles.seriousCircleMesh} d={seriousCircleMesh}/>
+          </g>;
+          <g>
+            <path className={styles.fatalCircleMesh} d={fatalCircleMesh}/>
+          </g>;
         </g>
     </g>
   </svg>;
