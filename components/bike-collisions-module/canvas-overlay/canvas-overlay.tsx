@@ -56,7 +56,7 @@ const CanvasOverlay: FunctionComponent<CanvasOverlayTypes.Props> = ({map, data, 
   const bucketColors = colorThresholds.slice(0, -1).map((t, i, a) => {
     const v = i / (a.length - 1);
     const c = rgb(interpolateReds(0.15 + v * 0.85));
-    c.opacity = 0.4;
+    c.opacity = 0.3;
     return c.toString();
   });
   

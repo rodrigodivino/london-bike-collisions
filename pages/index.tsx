@@ -3,8 +3,8 @@ import Head from 'next/head';
 import styles from '../styles/Home.module.css';
 import SharedLeafletMapNoNextSSR from "../components/shared-module/shared-leaflet-map/shared-leaflet-map-no-next-ssr";
 import * as L from 'leaflet';
-import {LatLngExpression} from 'leaflet';
-import {useCallback, useMemo, useState} from "react";
+import {LatLngExpression, marker} from 'leaflet';
+import {useCallback, useEffect, useMemo, useState} from "react";
 import {BikeCollision} from "../types/bike-collision";
 import {useCSV} from "../hooks/use-csv";
 import SVGOverlayNoNextSSR from "../components/bike-collisions-module/svg-overlay/svg-overlay-no-next-ssr";
@@ -28,7 +28,7 @@ const Home: NextPage = () => {
     setIsZooming(isZooming);
   }, []);
   
-  const markerData = useMemo(() => data?.filter(d => d.Severity === CollisionSeverity.fatal), [data])
+  const markerData = useMemo(() => data?.filter(d => d.Severity !== CollisionSeverity.slight), [data])
   const contextData = useMemo(() => data, [data])
   
   const Main = <main className={styles.main}>

@@ -17,7 +17,7 @@
 }
 
 .marker {
-    fill: none;
+    fill:  #212121;
     stroke: #212121;
     stroke-width: 1px;
 }
