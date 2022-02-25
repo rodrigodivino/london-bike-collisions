@@ -6,9 +6,10 @@ import {useResponsiveMural} from "../../../hooks/use-responsive-mural";
 import {getProjectedLayout, ProjectedLayout} from "../../../hooks/get-projected-layout";
 import {BikeCollision} from "../../../types/bike-collision";
 import {hexbin} from "d3-hexbin";
-import {extent, interpolateReds, max, range, rgb, scaleThreshold} from "d3";
+import {interpolateReds, max, rgb, scaleThreshold} from "d3";
 import {CanvasOverlayConst} from "./canvas-overlay.const";
 import {LatLng} from "leaflet";
+import getNiceThresholds from "../../../hooks/get-nice-thresholds";
 
 const CanvasOverlay: FunctionComponent<CanvasOverlayTypes.Props> = ({map, data, isZooming}) => {
   const [canvas, canvasRef] = useQuickDOMRef<HTMLCanvasElement>();
@@ -23,8 +24,8 @@ const CanvasOverlay: FunctionComponent<CanvasOverlayTypes.Props> = ({map, data, 
   }, [map, data, isZooming]);
   
   
-  const bounds = new LatLng(data[0].Latitude, data[0].Longitude).toBounds(CanvasOverlayConst.BIN_RADIUS_METERS)
-  const binRadius = Math.abs(map.project(bounds.getNorthEast()).x - map.project(bounds.getNorthWest()).x)
+  const bounds = new LatLng(data[0].Latitude, data[0].Longitude).toBounds(CanvasOverlayConst.BIN_RADIUS_METERS);
+  const binRadius = Math.abs(map.project(bounds.getNorthEast()).x - map.project(bounds.getNorthWest()).x);
   
   const [hexbinData, hexagonPathString] = useMemo(() => {
     const relativeBinPoint = projectedContextData[0] ?? {x: 0, y: 0};
@@ -46,14 +47,11 @@ const CanvasOverlay: FunctionComponent<CanvasOverlayTypes.Props> = ({map, data, 
   
   const maxBinLength = max(hexbinData, b => b.length) as number;
   
-  // TODO: Improve color logic to be able to select amount of colors and still have meaningful steps as buckets
-  const colorThresholds = range(Math.ceil(maxBinLength / CanvasOverlayConst.COLOR_THRESHOLD_STEP) + 1)
-      .map(d => d * CanvasOverlayConst.COLOR_THRESHOLD_STEP + CanvasOverlayConst.MINIMUM_VISIBLE_HEX_VALUE)
-  
-  
-  
-  console.log("maxBinLength", maxBinLength);
-  console.log("colorThresholds", colorThresholds);
+  const colorThresholds = getNiceThresholds(
+      CanvasOverlayConst.APPROXIMATE_NUMBER_OF_COLORS + 1,
+      maxBinLength,
+      CanvasOverlayConst.MINIMUM_VISIBLE_HEX_VALUE
+  );
   
   const bucketColors = colorThresholds.slice(0, -1).map((t, i, a) => {
     const v = i / (a.length - 1);
@@ -61,6 +59,7 @@ const CanvasOverlay: FunctionComponent<CanvasOverlayTypes.Props> = ({map, data, 
     c.opacity = 0.4;
     return c.toString();
   });
+  
   const colorScale = scaleThreshold<number, string>()
       .domain(colorThresholds as any)
       .range(['blue', ...bucketColors, 'red']);
@@ -75,6 +74,8 @@ const CanvasOverlay: FunctionComponent<CanvasOverlayTypes.Props> = ({map, data, 
   if (ctx) {
     ctx.resetTransform();
     ctx.clearRect(0, 0, width, height);
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+    ctx.fillRect(0, 0, width, height);
     ctx.translate(-projectionOrigin.x, -projectionOrigin.y);
     
     for (let i = 0; i < hexbinData.length; i++) {
