@@ -10,15 +10,37 @@
     width: 300px;
     max-width: 50%;
     height: 100%;
-    padding: 10px;
+    padding: 10px 10px 25px 10px;
     box-sizing: border-box;
 }
 
-.placeholderLegendContent {
-    position: relative;
+.colorLegend {
     width: 100%;
-    height: 100%;
     background-color: slategray;
     opacity: 0.5;
-    /*padding: 30px;*/
+}
+
+.colorLegendLine {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    width: 100%;
+    height: 30px;
+}
+
+.colorLegendLineColor {
+    pointer-events: all;
+    flex-shrink: 0;
+    width: 40px;
+    height: 100%;
+}
+
+.colorLegendLineLabel {
+    text-align: end;
+    padding-right: 5px;
+    max-width: 100%;
+    width: 100px;
+    min-width: 0;
+    background-color: steelblue;
 }

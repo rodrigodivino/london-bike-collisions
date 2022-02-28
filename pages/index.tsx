@@ -53,7 +53,7 @@ const Home: NextPage = () => {
             {map && <SVGOverlayNoNextSSR map={map} data={markerData ?? []} isZooming={isZooming}/>}
           </div>
           <div className={styles.layer}>
-            {map && <LegendsOverlay/>}
+            {map && <LegendsOverlay colorLegends={[{label: 'Test 1', color: 'blue'}, {label: 'Test 2', color: 'red'}]}/>}
           </div>
         </SharedLeafletMapNoNextSSR>
       </div>
