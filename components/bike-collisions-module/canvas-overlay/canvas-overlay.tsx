@@ -1,4 +1,4 @@
-import {FunctionComponent, useLayoutEffect, useMemo, useState} from "react";
+import {FunctionComponent, useEffect, useLayoutEffect, useMemo, useState} from "react";
 import {CanvasOverlayTypes} from "./canvas-overlay.types";
 import styles from './canvas-overlay.module.css';
 import {useQuickDOMRef} from "../../../hooks/use-quick-dom-ref";
@@ -10,8 +10,9 @@ import {interpolateReds, max, rgb, scaleThreshold} from "d3";
 import {CanvasOverlayConst} from "./canvas-overlay.const";
 import {LatLng} from "leaflet";
 import getNiceThresholds from "../../../hooks/get-nice-thresholds";
+import {getOpaqueEquivalent} from "../../../hooks/get-opaque-equivalent";
 
-const CanvasOverlay: FunctionComponent<CanvasOverlayTypes.Props> = ({map, data, isZooming}) => {
+const CanvasOverlay: FunctionComponent<CanvasOverlayTypes.Props> = ({map, data, isZooming, $onColorData$}) => {
   const [canvas, canvasRef] = useQuickDOMRef<HTMLCanvasElement>();
   const [width, height] = useResponsiveMural(canvasRef);
   const [projectedContextData, setProjectedContextData] = useState<ProjectedLayout<BikeCollision>[]>([]);
@@ -65,6 +66,22 @@ const CanvasOverlay: FunctionComponent<CanvasOverlayTypes.Props> = ({map, data, 
   const colorScale = scaleThreshold<number, string>()
       .domain(colorThresholds as any)
       .range(['blue', ...bucketColors, 'red']);
+  
+  const colorData: Array<CanvasOverlayTypes.ColorData> = [];
+  const colorScaleDomain = colorScale.domain();
+  const colorScaleRange = colorScale.range();
+  for (let i = -1; i < colorScaleDomain.length; i++) {
+    const startingThreshold = colorScaleDomain[i] ?? -Infinity;
+    const endingThreshold = colorScaleDomain[i + 1] ?? Infinity;
+    colorData.push({
+      threshold: [startingThreshold, endingThreshold],
+      color: getOpaqueEquivalent(colorScaleRange[i + 1]).toString()
+    });
+  }
+  
+  useEffect(() => {
+    $onColorData$?.(colorData);
+  });
   
   
   const projectionOrigin = map.project(map.getBounds().getNorthWest());

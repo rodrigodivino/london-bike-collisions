@@ -14,7 +14,6 @@ const LegendsOverlay: FunctionComponent<LegendsOverlayTypes.Props> = ({colorLege
             return <div key={colorLegendLine.label} className={styles.colorLegendLine}>
               <div className={styles.colorLegendLineLabel}> {colorLegendLine.label} </div>
               <div className={styles.colorLegendLineColor} style={{backgroundColor: colorLegendLine.color}}/>
-  
             </div>
           })
         }

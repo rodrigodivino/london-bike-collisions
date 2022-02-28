@@ -11,6 +11,9 @@ import SVGOverlayNoNextSSR from "../components/bike-collisions-module/svg-overla
 import CanvasOverlayNoNextSSR from "../components/bike-collisions-module/canvas-overlay/canvas-overlay-no-next-ssr";
 import {CollisionSeverity} from "../types/collision-severity";
 import LegendsOverlay from "../components/bike-collisions-module/legends-overlay/legends-overlay";
+import {LegendsOverlayTypes} from "../components/bike-collisions-module/legends-overlay/legends-overlay.types";
+import {CanvasOverlayTypes} from "../components/bike-collisions-module/canvas-overlay/canvas-overlay.types";
+import usePointerTo from "../hooks/use-pointer-to";
 
 const INITIAL_CENTER: LatLngExpression = {lat: 51.507359, lng: -0.126439};
 const INITIAL_ZOOM: number = 12;
@@ -20,6 +23,7 @@ const Home: NextPage = () => {
   
   const [{map}, setMapWrapper] = useState<{ map: L.Map | undefined }>({map: undefined});
   const [isZooming, setIsZooming] = useState<boolean>(false);
+  const [colorLegendData, setColorLegendData] = useState<LegendsOverlayTypes.ColorLegend[]>([]);
   
   const handleMapUpdate = useCallback((map: L.Map) => {
     setMapWrapper({map});
@@ -29,13 +33,35 @@ const Home: NextPage = () => {
     setIsZooming(isZooming);
   }, []);
   
+  
+  const colorLegendDataPointer = usePointerTo(colorLegendData);
+  
+  const handleColorData = useCallback((colorData: Array<CanvasOverlayTypes.ColorData>) => {
+    const newColorLegendData = colorData
+        .filter(colorDatum => !(colorDatum.threshold.includes(Infinity) || colorDatum.threshold.includes(-Infinity)))
+        .map(colorDatum => {
+          return {
+            label: colorDatum.threshold.toString(),
+            color: colorDatum.color
+          };
+        });
+    
+    console.log("newColorLegendData", newColorLegendData);
+    
+    if (JSON.stringify(colorLegendDataPointer.current) !== JSON.stringify(newColorLegendData)) {
+      setColorLegendData(newColorLegendData);
+    }
+  }, [colorLegendDataPointer]);
+  
   const markerData = useMemo(() => data?.filter(d => d.Severity !== CollisionSeverity.slight), [data]);
   const contextData = useMemo(() => data, [data]);
+  
   
   const Main = <main className={styles.main}>
     <div className={styles.header}>
       <h1 className={styles.title}>Bicycle collisions in london between 2005 and 2019</h1>
-      <h2 className={styles.subtitle}>Understanding the routes that have been dangerous for cyclists in the past years</h2>
+      <h2 className={styles.subtitle}>Understanding the routes that have been dangerous for cyclists in the past
+        years</h2>
     </div>
     
     <div className={styles.layerContainer}>
@@ -47,17 +73,19 @@ const Home: NextPage = () => {
             initialZoom={INITIAL_ZOOM}
         >
           <div className={styles.layer}>
-            {map && <CanvasOverlayNoNextSSR map={map} data={contextData ?? []} isZooming={isZooming}/>}
+            {map &&
+            <CanvasOverlayNoNextSSR $onColorData$={handleColorData} map={map} data={contextData ?? []}
+                                    isZooming={isZooming}/>}
           </div>
           <div className={styles.layer}>
             {map && <SVGOverlayNoNextSSR map={map} data={markerData ?? []} isZooming={isZooming}/>}
           </div>
           <div className={styles.layer}>
-            {map && <LegendsOverlay colorLegends={[{label: 'Test 1', color: 'blue'}, {label: 'Test 2', color: 'red'}]}/>}
+            {map && <LegendsOverlay colorLegends={colorLegendData}/>}
           </div>
         </SharedLeafletMapNoNextSSR>
       </div>
-      
+    
     </div>
   </main>;
   const Loading = <p>Loading</p>;
@@ -75,9 +103,11 @@ const Home: NextPage = () => {
         {(data && data.length > 0) ? Main : Loading}
         <footer className={styles.footer}>
           <p>
-            <b>Data:</b> <a href={'https://bikedata.cyclestreets.net/collisions/#9.44/51.4814/0.0567'}>Bike Collisions in
+            <b>Data:</b> <a href={'https://bikedata.cyclestreets.net/collisions/#9.44/51.4814/0.0567'}>Bike Collisions
+            in
             London</a> (2005-2019). &nbsp;
-            <b>Data Source:</b> <a href={'https://bikedata.cyclestreets.net/collisions/#9.44/51.4814/0.0567'}>CycleStreets</a>.
+            <b>Data Source:</b> <a
+              href={'https://bikedata.cyclestreets.net/collisions/#9.44/51.4814/0.0567'}>CycleStreets</a>.
           </p>
           <p><b>Design:</b> Rodrigo Divino. &nbsp; <b>Implementation:</b> Rodrigo Divino.</p>
         </footer>

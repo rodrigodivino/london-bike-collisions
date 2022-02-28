@@ -6,5 +6,11 @@ export namespace CanvasOverlayTypes {
     map: LMap;
     data: BikeCollision[];
     isZooming: boolean;
+    $onColorData$?: (colorData: Array<ColorData>) => void;
+  }
+  
+  export interface ColorData {
+    threshold: [number, number],
+    color: string,
   }
 }
