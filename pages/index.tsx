@@ -10,6 +10,7 @@ import {useCSV} from "../hooks/use-csv";
 import SVGOverlayNoNextSSR from "../components/bike-collisions-module/svg-overlay/svg-overlay-no-next-ssr";
 import CanvasOverlayNoNextSSR from "../components/bike-collisions-module/canvas-overlay/canvas-overlay-no-next-ssr";
 import {CollisionSeverity} from "../types/collision-severity";
+import LegendsOverlay from "../components/bike-collisions-module/legends-overlay/legends-overlay";
 
 const INITIAL_CENTER: LatLngExpression = {lat: 51.507359, lng: -0.126439};
 const INITIAL_ZOOM: number = 12;
@@ -50,6 +51,9 @@ const Home: NextPage = () => {
           </div>
           <div className={styles.layer}>
             {map && <SVGOverlayNoNextSSR map={map} data={markerData ?? []} isZooming={isZooming}/>}
+          </div>
+          <div className={styles.layer}>
+            {map && <LegendsOverlay/>}
           </div>
         </SharedLeafletMapNoNextSSR>
       </div>
