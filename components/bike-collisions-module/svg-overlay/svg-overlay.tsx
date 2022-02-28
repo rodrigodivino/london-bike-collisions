@@ -37,8 +37,7 @@ const SVGOverlay: FunctionComponent<SVGOverlayTypes.Props> = ({map, data, isZoom
     return 'M '+cx+' '+cy+' m -'+r+', 0 a '+r+','+r+' 0 1,0 '+(r*2)+',0 a '+r+','+r+' 0 1,0 -'+(r*2)+',0';
   }
   
-  const circleMesh = SVGProjectedData.map(l => circlePath(l.x, l.y, 3)).join('')
-  const circleMesh2 = SVGProjectedData.map(l => circlePath(l.x, l.y, 4)).join('')
+  const circleMesh = SVGProjectedData.map(l => circlePath(l.x, l.y, 2)).join('')
   
   // TODO: Add fatal markers at a lower zoom level
   // TODO: Add serious markers at a even lower zoom level
