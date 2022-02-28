@@ -44,14 +44,16 @@ const Home: NextPage = () => {
             $onZoomStateUpdate$={handleMapZoomStateUpdate}
             initialCenter={INITIAL_CENTER}
             initialZoom={INITIAL_ZOOM}
-        />
+        >
+          <div className={styles.layer}>
+            {map && <CanvasOverlayNoNextSSR map={map} data={contextData ?? []} isZooming={isZooming}/>}
+          </div>
+          <div className={styles.layer}>
+            {map && <SVGOverlayNoNextSSR map={map} data={markerData ?? []} isZooming={isZooming}/>}
+          </div>
+        </SharedLeafletMapNoNextSSR>
       </div>
-      <div className={styles.layer}>
-        {map && <CanvasOverlayNoNextSSR map={map} data={contextData ?? []} isZooming={isZooming}/>}
-      </div>
-      <div className={styles.layer}>
-        {map && <SVGOverlayNoNextSSR map={map} data={markerData ?? []} isZooming={isZooming}/>}
-      </div>
+      
     </div>
   </main>;
   const Loading = <p>Loading</p>;

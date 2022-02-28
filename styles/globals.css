@@ -22,6 +22,6 @@ p {
   text-align: center;
 }
 
-/*.leaflet-control-container {*/
-/*  z-index: 99999;*/
-/*}*/
+.leaflet-control-container {
+  z-index: 999999;
+}
