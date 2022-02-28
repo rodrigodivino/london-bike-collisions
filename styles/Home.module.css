@@ -1,15 +1,27 @@
+.root {
+    padding: 20px;
+}
+
 .main {
 
 }
 
 .footer {
+    margin: 0 auto 0 auto;
+    max-width: 1600px;
+    display: flex;
+    justify-content: space-between;
+}
 
+.header {
+    max-width: 1600px;
+    margin: 0 auto 20px auto;
 }
 
 .layerContainer {
     position: relative;
     max-width: 1600px;
-    height: 800px;
+    height: 80vh;
     margin: auto;
     width: 100%;
 }

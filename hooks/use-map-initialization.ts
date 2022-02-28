@@ -24,6 +24,9 @@ export const useMapInitialization = (
       //@ts-ignore
       ext: 'png'
     }).addTo(mapRef.current);
+  
+    L.control.scale().addTo(mapRef.current);
+    
     
   }, [mapContainerRef, initialZoom, initialCenter]);
   

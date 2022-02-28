@@ -3,8 +3,8 @@ import Head from 'next/head';
 import styles from '../styles/Home.module.css';
 import SharedLeafletMapNoNextSSR from "../components/shared-module/shared-leaflet-map/shared-leaflet-map-no-next-ssr";
 import * as L from 'leaflet';
-import {LatLngExpression, marker} from 'leaflet';
-import {useCallback, useEffect, useMemo, useState} from "react";
+import {LatLngExpression} from 'leaflet';
+import {useCallback, useMemo, useState} from "react";
 import {BikeCollision} from "../types/bike-collision";
 import {useCSV} from "../hooks/use-csv";
 import SVGOverlayNoNextSSR from "../components/bike-collisions-module/svg-overlay/svg-overlay-no-next-ssr";
@@ -28,12 +28,15 @@ const Home: NextPage = () => {
     setIsZooming(isZooming);
   }, []);
   
-  const markerData = useMemo(() => data?.filter(d => d.Severity !== CollisionSeverity.slight), [data])
-  const contextData = useMemo(() => data, [data])
+  const markerData = useMemo(() => data?.filter(d => d.Severity !== CollisionSeverity.slight), [data]);
+  const contextData = useMemo(() => data, [data]);
   
   const Main = <main className={styles.main}>
-    <h1>London Bike Collisions</h1>
-    <h2>Data visualization of london bike collisions between 2005 - 2019</h2>
+    <div className={styles.header}>
+      <h1 className={styles.title}>Bicycle collisions in london between 2005 and 2019</h1>
+      <h2 className={styles.subtitle}>Understanding the routes that have been dangerous for cyclists in the past years</h2>
+    </div>
+    
     <div className={styles.layerContainer}>
       <div className={styles.interactiveLayer}>
         <SharedLeafletMapNoNextSSR
@@ -54,7 +57,7 @@ const Home: NextPage = () => {
   const Loading = <p>Loading</p>;
   
   return (
-      <div>
+      <div className={styles.root}>
         <Head>
           <title>London Bike Collisions</title>
           <meta name="description" content="London Bike Collisions Data Visualization"/>
@@ -65,9 +68,12 @@ const Home: NextPage = () => {
         </Head>
         {(data && data.length > 0) ? Main : Loading}
         <footer className={styles.footer}>
-          Data: <a href={'https://bikedata.cyclestreets.net/collisions/#9.44/51.4814/0.0567'}>Bike Collisions in
-          London</a> (2005-2019),
-          Data Source: <a href={'https://bikedata.cyclestreets.net/collisions/#9.44/51.4814/0.0567'}>CycleStreets</a>
+          <p>
+            <b>Data:</b> <a href={'https://bikedata.cyclestreets.net/collisions/#9.44/51.4814/0.0567'}>Bike Collisions in
+            London</a> (2005-2019). &nbsp;
+            <b>Data Source:</b> <a href={'https://bikedata.cyclestreets.net/collisions/#9.44/51.4814/0.0567'}>CycleStreets</a>.
+          </p>
+          <p><b>Design:</b> Rodrigo Divino. &nbsp; <b>Implementation:</b> Rodrigo Divino.</p>
         </footer>
       </div>
   );
