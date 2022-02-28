@@ -1,10 +1,11 @@
-import {FunctionComponent, useLayoutEffect, useMemo, useRef, useState} from "react";
+import {FunctionComponent, useEffect, useLayoutEffect, useMemo, useRef, useState} from "react";
 import {SVGOverlayTypes} from "./svg-overlay.types";
 import styles from './svg-overlay.module.css';
 import {BikeCollision} from "../../../types/bike-collision";
 import {getProjectedLayout, ProjectedLayout} from "../../../hooks/get-projected-layout";
 import {useResponsiveMural} from "../../../hooks/use-responsive-mural";
 import {CollisionSeverity} from "../../../types/collision-severity";
+import {marker} from "leaflet";
 
 const SVGOverlay: FunctionComponent<SVGOverlayTypes.Props> = ({map, data, isZooming}) => {
   const [projectedData, setProjectedData] = useState<ProjectedLayout<BikeCollision>[]>([]);
@@ -12,7 +13,7 @@ const SVGOverlay: FunctionComponent<SVGOverlayTypes.Props> = ({map, data, isZoom
   const [width, height] = useResponsiveMural(svgRef);
   
   useLayoutEffect(() => {
-    if (map.getZoom() >= 13) {
+    if (map.getZoom() >= 15) {
       setProjectedData(getProjectedLayout<BikeCollision>(
           d => map.project([d.Latitude, d.Longitude]),
           data
@@ -36,8 +37,8 @@ const SVGOverlay: FunctionComponent<SVGOverlayTypes.Props> = ({map, data, isZoom
     return 'M '+cx+' '+cy+' m -'+r+', 0 a '+r+','+r+' 0 1,0 '+(r*2)+',0 a '+r+','+r+' 0 1,0 -'+(r*2)+',0';
   }
   
-  const seriousCircleMesh = SVGProjectedData.filter(d => d.d.Severity === CollisionSeverity.serious).map(l => circlePath(l.x, l.y, 2)).join('')
-  const fatalCircleMesh = SVGProjectedData.filter(d => d.d.Severity === CollisionSeverity.fatal).map(l => circlePath(l.x, l.y, 4)).join('')
+  const circleMesh = SVGProjectedData.map(l => circlePath(l.x, l.y, 3)).join('')
+  const circleMesh2 = SVGProjectedData.map(l => circlePath(l.x, l.y, 4)).join('')
   
   // TODO: Add fatal markers at a lower zoom level
   // TODO: Add serious markers at a even lower zoom level
@@ -50,12 +51,13 @@ const SVGOverlay: FunctionComponent<SVGOverlayTypes.Props> = ({map, data, isZoom
       <g className={`${isZooming ? styles.zooming : ''}`}>
         <g className="marker">
           <g>
-            <path className={styles.seriousCircleMesh} d={seriousCircleMesh}/>
+            <path className={styles.circleMesh} d={circleMesh}/>
           </g>;
-          <g>
-            <path className={styles.fatalCircleMesh} d={fatalCircleMesh}/>
-          </g>;
+          {/*<g>*/}
+          {/*  <path className={styles.circleMeshRing} d={circleMesh2}/>*/}
+          {/*</g>;*/}
         </g>
+        
     </g>
   </svg>;
 };

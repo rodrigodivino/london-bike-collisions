@@ -11,7 +11,7 @@ import SVGOverlayNoNextSSR from "../components/bike-collisions-module/svg-overla
 import CanvasOverlayNoNextSSR from "../components/bike-collisions-module/canvas-overlay/canvas-overlay-no-next-ssr";
 import {CollisionSeverity} from "../types/collision-severity";
 
-const INITIAL_CENTER: LatLngExpression = {lat: 51.507359, lng: -0.136439};
+const INITIAL_CENTER: LatLngExpression = {lat: 51.507359, lng: -0.126439};
 const INITIAL_ZOOM: number = 12;
 
 const Home: NextPage = () => {

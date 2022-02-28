@@ -22,14 +22,14 @@
     stroke-width: 1px;
 }
 
-.seriousCircleMesh {
+.circleMesh {
     fill:  none;
-    stroke: #212121;
-    stroke-width: 1px;
+    stroke: #193c4e;
+    stroke-width: 1.5px;
 }
 
-.fatalCircleMesh {
-    fill: #212121;
-    stroke: #212121;
+.circleMeshRing {
+    fill:  none;
+    stroke: #000;
     stroke-width: 1px;
 }
