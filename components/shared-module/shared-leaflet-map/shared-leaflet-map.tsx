@@ -23,8 +23,11 @@ const SharedLeafletMap: FunctionComponent<PropsWithChildren<SharedLeafletMapType
   
   
   return <div className={styles.container}>
-    <div ref={mapContainer} id={styles.map} className={styles.map}>
-      {children}
+    <div className={styles.map} ref={mapContainer} id={styles.map} >
+      <div className={styles.overlayContainer}>
+        {children}
+      </div>
+  
     </div>
   </div>;
 };
