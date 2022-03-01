@@ -6,9 +6,10 @@
 }
 
 .legendPane {
+    border: 1px solid #a3a3a3;
     float: right;
-    background-color: #FFFB;
-    backdrop-filter: blur(10px);
+    background-color: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(12px);
     padding: 10px;
     box-sizing: border-box;
 }
@@ -18,7 +19,9 @@
 
 .colorLegendTitle {
     display: block;
-    text-align: center;
+    text-align: end;
+    margin-bottom: 5px;
+    font-weight: bold;
 }
 
 .colorLegendLine {

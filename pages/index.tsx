@@ -41,12 +41,10 @@ const Home: NextPage = () => {
         .filter(colorDatum => !(colorDatum.threshold.includes(Infinity) || colorDatum.threshold.includes(-Infinity)))
         .map(colorDatum => {
           return {
-            label: colorDatum.threshold.toString(),
+            label: `${colorDatum.threshold[0]} to ${colorDatum.threshold[1]}`,
             color: colorDatum.color
           };
         });
-    
-    console.log("newColorLegendData", newColorLegendData);
     
     if (JSON.stringify(colorLegendDataPointer.current) !== JSON.stringify(newColorLegendData)) {
       setColorLegendData(newColorLegendData);
