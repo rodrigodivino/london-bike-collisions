@@ -6,9 +6,7 @@ const LegendsOverlay: FunctionComponent<LegendsOverlayTypes.Props> = ({colorLege
   return <div className={styles.container}>
     <div className={styles.legendPane}>
       <div className={styles.colorLegend}>
-      
-      </div>
-      <div className={styles.colorLegend}>
+        <span className={styles.colorLegendTitle}>Nº of Accidents</span>
         {
           colorLegends.map(colorLegendLine => {
             return <div key={colorLegendLine.label} className={styles.colorLegendLine}>
@@ -17,8 +15,8 @@ const LegendsOverlay: FunctionComponent<LegendsOverlayTypes.Props> = ({colorLege
             </div>
           })
         }
-        
       </div>
+      <hr/>
     </div>
   </div>
 }
