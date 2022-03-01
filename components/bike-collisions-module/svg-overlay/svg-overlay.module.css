@@ -16,20 +16,9 @@
     stroke: none;
 }
 
-.markerSevere {
-    fill:  #212121;
-    stroke: #212121;
-    stroke-width: 1px;
-}
 
 .circleMesh {
     fill:  none;
     stroke: #193c4e;
     stroke-width: 1.5px;
-}
-
-.circleMeshRing {
-    fill:  none;
-    stroke: #000;
-    stroke-width: 1px;
 }

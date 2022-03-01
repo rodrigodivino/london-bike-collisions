@@ -14,6 +14,7 @@ import LegendsOverlay from "../components/bike-collisions-module/legends-overlay
 import {LegendsOverlayTypes} from "../components/bike-collisions-module/legends-overlay/legends-overlay.types";
 import {CanvasOverlayTypes} from "../components/bike-collisions-module/canvas-overlay/canvas-overlay.types";
 import usePointerTo from "../hooks/use-pointer-to";
+import {SVGOverlayTypes} from "../components/bike-collisions-module/svg-overlay/svg-overlay.types";
 
 const INITIAL_CENTER: LatLngExpression = {lat: 51.507359, lng: -0.126439};
 const INITIAL_ZOOM: number = 12;
@@ -24,6 +25,7 @@ const Home: NextPage = () => {
   const [{map}, setMapWrapper] = useState<{ map: L.Map | undefined }>({map: undefined});
   const [isZooming, setIsZooming] = useState<boolean>(false);
   const [colorLegendData, setColorLegendData] = useState<LegendsOverlayTypes.ColorLegend[]>([]);
+  const [shapeLegendData, setShapeLegendData] = useState<LegendsOverlayTypes.ShapeLegend[]>([]);
   
   const handleMapUpdate = useCallback((map: L.Map) => {
     setMapWrapper({map});
@@ -51,6 +53,10 @@ const Home: NextPage = () => {
     }
   }, [colorLegendDataPointer]);
   
+  const handleShapeLegendData = useCallback((shapeLegendData: SVGOverlayTypes.LegendData[]) => {
+    setShapeLegendData(shapeLegendData);
+  }, []);
+  
   const markerData = useMemo(() => data?.filter(d => d.Severity !== CollisionSeverity.slight), [data]);
   const contextData = useMemo(() => data, [data]);
   
@@ -72,14 +78,14 @@ const Home: NextPage = () => {
         >
           <div className={styles.layer}>
             {map &&
-            <CanvasOverlayNoNextSSR $onColorData$={handleColorData} map={map} data={contextData ?? []}
+            <CanvasOverlayNoNextSSR $onColorLegendData$={handleColorData} map={map} data={contextData ?? []}
                                     isZooming={isZooming}/>}
           </div>
           <div className={styles.layer}>
-            {map && <SVGOverlayNoNextSSR map={map} data={markerData ?? []} isZooming={isZooming}/>}
+            {map && <SVGOverlayNoNextSSR $onShapeLegendData$={handleShapeLegendData} map={map} data={markerData ?? []} isZooming={isZooming}/>}
           </div>
           <div className={styles.layer}>
-            {map && <LegendsOverlay colorLegends={colorLegendData}/>}
+            {map && <LegendsOverlay shapeLegends={shapeLegendData} colorLegends={colorLegendData}/>}
           </div>
         </SharedLeafletMapNoNextSSR>
       </div>

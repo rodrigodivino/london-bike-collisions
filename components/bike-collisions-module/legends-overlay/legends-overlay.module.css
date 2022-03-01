@@ -6,20 +6,19 @@
 }
 
 .legendPane {
-    border: 1px solid #a3a3a3;
     float: right;
-    background-color: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(12px);
-    padding: 10px;
+    background-color: rgba(255, 255, 255, 1);
+    padding: 20px;
     box-sizing: border-box;
 }
 
 .colorLegend {
 }
 
-.colorLegendTitle {
+
+.legendTitle {
     display: block;
-    text-align: end;
+    text-align: start;
     margin-bottom: 5px;
     font-weight: bold;
 }
@@ -28,12 +27,11 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: flex-start;
     height: 20px;
 }
 
 .colorLegendLineColor {
-    pointer-events: all;
     flex-shrink: 0;
     width: 40px;
     height: 100%;
@@ -41,7 +39,38 @@
 
 .colorLegendLineLabel {
     text-align: end;
-    padding-right: 5px;
+    padding-left: 5px;
     max-width: 100%;
     min-width: 0;
 }
+
+.markerLegend {
+
+}
+
+.markerLegendLine{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.markerLegendLabel {
+    pointer-events: all;
+    text-align: end;
+    padding-left: 5px;
+    max-width: 100%;
+    min-width: 0;
+}
+
+/*.markerLegendShape {*/
+/*    display: flex;*/
+/*    align-items: center;*/
+/*    align-content: center;*/
+/*    justify-items: center;*/
+/*    justify-content: center;*/
+/*    flex-shrink: 0;*/
+/*    width: 20px;*/
+/*    height: 100%;*/
+/*}*/
+

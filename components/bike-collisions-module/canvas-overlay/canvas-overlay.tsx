@@ -12,7 +12,7 @@ import {LatLng} from "leaflet";
 import getNiceThresholds from "../../../hooks/get-nice-thresholds";
 import {getOpaqueEquivalent} from "../../../hooks/get-opaque-equivalent";
 
-const CanvasOverlay: FunctionComponent<CanvasOverlayTypes.Props> = ({map, data, isZooming, $onColorData$}) => {
+const CanvasOverlay: FunctionComponent<CanvasOverlayTypes.Props> = ({map, data, isZooming, $onColorLegendData$}) => {
   const [canvas, canvasRef] = useQuickDOMRef<HTMLCanvasElement>();
   const [width, height] = useResponsiveMural(canvasRef);
   const [projectedContextData, setProjectedContextData] = useState<ProjectedLayout<BikeCollision>[]>([]);
@@ -80,7 +80,7 @@ const CanvasOverlay: FunctionComponent<CanvasOverlayTypes.Props> = ({map, data, 
   }
   
   useEffect(() => {
-    $onColorData$?.(colorData);
+    $onColorLegendData$?.(colorData);
   });
   
   
