@@ -17,6 +17,7 @@ import {Legends} from "../hooks/legends-module/legends";
 import {useLegendStore} from "../hooks/legends-module/use-legend-store";
 import LegendMode = Legends.LegendMode;
 
+
 const INITIAL_CENTER: LatLngExpression = {lat: 51.507359, lng: -0.126439};
 const INITIAL_ZOOM: number = 12;
 
@@ -40,7 +41,7 @@ const Home: NextPage = () => {
   
   const handleColorData = useCallback((colorData: Array<CanvasOverlayTypes.ColorData>) => {
     legendDispatcher({
-      type: LegendMode.DISCRETE_COLOR,
+      mode: LegendMode.DISCRETE_COLOR,
       id: 'heatmap',
       title: 'Nº of Collisions',
       data: colorData
@@ -55,7 +56,7 @@ const Home: NextPage = () => {
   }, [legendDispatcher]);
   
   const handleShapeLegendData = useCallback((shapeLegendData: SVGOverlayTypes.LegendData[]) => {
-      legendDispatcher({type: LegendMode.SHAPE, data: shapeLegendData, id: 'markers', title: 'Severe Collisions'});
+      legendDispatcher({mode: LegendMode.SHAPE, data: shapeLegendData, id: 'markers', title: 'Severe Collisions'});
   }, [legendDispatcher]);
   
   const markerData = useMemo(() => data?.filter(d => d.Severity !== CollisionSeverity.slight), [data]);

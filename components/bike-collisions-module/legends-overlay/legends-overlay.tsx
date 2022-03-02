@@ -30,7 +30,7 @@ const LegendsOverlay: FunctionComponent<LegendsOverlayTypes.Props> = ({legendSto
                       </div>
                   })
                 } else {
-                  throw new Error(`Legend type ${legend.type} not supported`)
+                  throw new Error(`Legend type ${legend.mode} not supported`)
                 }
               })()
             }
