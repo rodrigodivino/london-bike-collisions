@@ -17,8 +17,6 @@ export namespace Legends {
   }
   
   export type LegendDispatcher = <T extends Legends.LegendMode>(action: LegendRegistry<T>) => void;
-  
-  
   export type LegendStore = Record<string, LegendRegistry<Legends.LegendMode>>;
   
   export function isMode<T extends LegendMode>(type: T, legend: LegendRegistry<LegendMode>): legend is LegendRegistry<T> {
