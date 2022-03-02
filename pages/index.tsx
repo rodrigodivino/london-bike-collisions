@@ -25,8 +25,6 @@ const Home: NextPage = () => {
   
   const [{map}, setMapWrapper] = useState<{ map: L.Map | undefined }>({map: undefined});
   const [isZooming, setIsZooming] = useState<boolean>(false);
-  const [colorLegendData, setColorLegendData] = useState<Legends.ColorLegendData[]>([]);
-  const [shapeLegendData, setShapeLegendData] = useState<Legends.ShapeLegendData[]>([]);
   const [legendStore, legendDispatcher] = useLegendStore();
   
   console.log("legendStore", legendStore);
@@ -90,7 +88,7 @@ const Home: NextPage = () => {
           </div>
           <div className={styles.layer}>
             {map &&
-            <LegendsOverlay legendStore={legendStore} shapeLegends={shapeLegendData} colorLegends={colorLegendData}/>}
+            <LegendsOverlay legendStore={legendStore}/>}
           </div>
         </SharedLeafletMapNoNextSSR>
       </div>

@@ -5,7 +5,7 @@ export const useLegendStore = (): [Legends.LegendStore, Legends.LegendDispatcher
   const [legendStore, setLegendStore] = useState<Legends.LegendStore>({});
   
   const legendDispatcher: Legends.LegendDispatcher = useCallback(
-      <T extends Legends.LegendMode>(registerAction: Legends.LegendRegisterAction<T>): void => {
+      <T extends Legends.LegendMode>(registerAction: Legends.LegendRegistry<T>): void => {
         setLegendStore(legendStore => {
           if(JSON.stringify(legendStore[registerAction.id]) === JSON.stringify(registerAction)) return legendStore;
           legendStore[registerAction.id] = registerAction;
