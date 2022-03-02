@@ -4,17 +4,8 @@ import styles from './legends-overlay.module.css';
 import {Legends} from "../../../hooks/legends-module/legends";
 import LegendMode = Legends.LegendMode;
 
-const LegendsOverlay: FunctionComponent<LegendsOverlayTypes.Props> = ({legendStore, colorLegends, shapeLegends}) => {
-  // TODO: Abstract Legends. Guidelines:
-  // TODO: 1. Focus on designing with hooks first, components second.
-  // TODO: 2. Try encapsulating contexts hooks and create a legends hook module to instantiate and pass data around
-  // TODO: 2. Don't use classes or rxjs
-  // TODO: 3. If it passes a small and sensible complexity threshold, it is not a good solution
-  
-  console.log("legendStore", legendStore);
-  const legends = Object.values(legendStore);
-  
-  const a = legends[0];
+const LegendsOverlay: FunctionComponent<LegendsOverlayTypes.Props> = ({legendStore}) => {
+  const legends = Object.values(legendStore).filter(legend => legend.data.length);
   
   return <div className={styles.container}>
     <div className={styles.legendPane}>

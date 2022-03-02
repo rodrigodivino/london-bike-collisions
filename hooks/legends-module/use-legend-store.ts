@@ -8,7 +8,6 @@ export const useLegendStore = (): [Legends.LegendStore, Legends.LegendDispatcher
       <T extends Legends.LegendMode>(registerAction: Legends.LegendRegisterAction<T>): void => {
         setLegendStore(legendStore => {
           if(JSON.stringify(legendStore[registerAction.id]) === JSON.stringify(registerAction)) return legendStore;
-          console.log('updating')
           legendStore[registerAction.id] = registerAction;
           return {...legendStore};
         });

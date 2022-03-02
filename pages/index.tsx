@@ -57,7 +57,7 @@ const Home: NextPage = () => {
   }, [legendDispatcher]);
   
   const handleShapeLegendData = useCallback((shapeLegendData: SVGOverlayTypes.LegendData[]) => {
-    legendDispatcher({type: LegendMode.SHAPE, data: shapeLegendData, id: 'markers', title: 'Severe Collisions'});
+      legendDispatcher({type: LegendMode.SHAPE, data: shapeLegendData, id: 'markers', title: 'Severe Collisions'});
   }, [legendDispatcher]);
   
   const markerData = useMemo(() => data?.filter(d => d.Severity !== CollisionSeverity.slight), [data]);

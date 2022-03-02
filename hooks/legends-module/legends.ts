@@ -28,7 +28,7 @@ export namespace Legends {
     type: T,
     id: string,
     title: string,
-    data: Legends.LegendDataTypes[T]
+    data: Legends.LegendDataTypes[T],
   }
   
   export type LegendDispatcher =
