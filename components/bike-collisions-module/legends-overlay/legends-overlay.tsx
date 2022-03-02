@@ -3,6 +3,13 @@ import {LegendsOverlayTypes} from "./legends-overlay.types";
 import styles from './legends-overlay.module.css';
 
 const LegendsOverlay: FunctionComponent<LegendsOverlayTypes.Props> = ({colorLegends, shapeLegends}) => {
+  // TODO: Abstract Legends. Guidelines:
+  // TODO: 1. Focus on designing with hooks first, components second.
+  // TODO: 2. Try encapsulating contexts hooks and create a legends hook module to instantiate and pass data around
+  // TODO: 2. Don't use classes or rxjs
+  // TODO: 3. If it passes a small and sensible complexity threshold, it is not a good solution
+  
+  
   return <div className={styles.container}>
     <div className={styles.legendPane}>
       <div className={styles.colorLegend}>
