@@ -1,5 +1,6 @@
 import {Map as LMap} from "leaflet";
 import {BikeCollision} from "../../../types/bike-collision";
+import {Legends} from "../../../hooks/legends-module/legends";
 
 export namespace CanvasOverlayTypes {
   export interface Props {

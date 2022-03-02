@@ -1,6 +1,5 @@
 import {Map as LMap} from "leaflet";
 import {BikeCollision} from "../../../types/bike-collision";
-import {ReactNode} from "react";
 
 export namespace SVGOverlayTypes {
   export interface Props {

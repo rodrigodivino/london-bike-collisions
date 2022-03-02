@@ -11,15 +11,17 @@ export namespace Legends {
   
   export enum LegendMode {
     DISCRETE_COLOR = 'DISCRETE_COLOR',
-    SHAPE = 'SHAPE'
+    SHAPE = 'SHAPE',
   }
+  
+
   
   export interface LegendDataTypes {
-    [LegendMode.DISCRETE_COLOR]: Legends.ColorLegendData,
-    [LegendMode.SHAPE]: Legends.ShapeLegendData
+    [LegendMode.DISCRETE_COLOR]: Legends.ColorLegendData[],
+    [LegendMode.SHAPE]: Legends.ShapeLegendData[],
   }
   
-  export interface LegendRegisterAction<T extends Legends.LegendMode = Legends.LegendMode> {
+  export interface LegendRegisterAction<T extends Legends.LegendMode> {
     type: T,
     id: string,
     title: string,
@@ -29,13 +31,7 @@ export namespace Legends {
   export type LegendDispatcher =
       <T extends Legends.LegendMode>(action: LegendRegisterAction<T>) => void;
   
-  export interface LegendStoreDatum<T extends Legends.LegendMode = Legends.LegendMode> {
-    type: T,
-    title: string,
-    id: string,
-    data: Legends.LegendDataTypes[T]
-  }
   
-  export type LegendStore = Record<string, LegendStoreDatum>;
+  export type LegendStore = Record<string, LegendRegisterAction<Legends.LegendMode>>;
 }
 

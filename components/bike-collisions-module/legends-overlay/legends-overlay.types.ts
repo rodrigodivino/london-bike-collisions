@@ -4,7 +4,7 @@ export namespace LegendsOverlayTypes {
   export interface Props {
     colorLegends: Legends.ColorLegendData[];
     shapeLegends: Legends.ShapeLegendData[];
-    legendStore?: Legends.LegendStore;
+    legendStore: Legends.LegendStore;
   }
 }
 

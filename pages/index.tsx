@@ -11,10 +11,11 @@ import SVGOverlayNoNextSSR from "../components/bike-collisions-module/svg-overla
 import CanvasOverlayNoNextSSR from "../components/bike-collisions-module/canvas-overlay/canvas-overlay-no-next-ssr";
 import {CollisionSeverity} from "../types/collision-severity";
 import LegendsOverlay from "../components/bike-collisions-module/legends-overlay/legends-overlay";
-import {LegendsOverlayTypes} from "../components/bike-collisions-module/legends-overlay/legends-overlay.types";
 import {CanvasOverlayTypes} from "../components/bike-collisions-module/canvas-overlay/canvas-overlay.types";
-import usePointerTo from "../hooks/use-pointer-to";
 import {SVGOverlayTypes} from "../components/bike-collisions-module/svg-overlay/svg-overlay.types";
+import {Legends} from "../hooks/legends-module/legends";
+import {useLegendStore} from "../hooks/legends-module/use-legend-store";
+import LegendMode = Legends.LegendMode;
 
 const INITIAL_CENTER: LatLngExpression = {lat: 51.507359, lng: -0.126439};
 const INITIAL_ZOOM: number = 12;
@@ -24,8 +25,11 @@ const Home: NextPage = () => {
   
   const [{map}, setMapWrapper] = useState<{ map: L.Map | undefined }>({map: undefined});
   const [isZooming, setIsZooming] = useState<boolean>(false);
-  const [colorLegendData, setColorLegendData] = useState<LegendsOverlayTypes.ColorLegend[]>([]);
-  const [shapeLegendData, setShapeLegendData] = useState<LegendsOverlayTypes.ShapeLegend[]>([]);
+  const [colorLegendData, setColorLegendData] = useState<Legends.ColorLegendData[]>([]);
+  const [shapeLegendData, setShapeLegendData] = useState<Legends.ShapeLegendData[]>([]);
+  const [legendStore, legendDispatcher] = useLegendStore();
+  
+  console.log("legendStore", legendStore);
   
   const handleMapUpdate = useCallback((map: L.Map) => {
     setMapWrapper({map});
@@ -36,30 +40,28 @@ const Home: NextPage = () => {
   }, []);
   
   
-  const colorLegendDataPointer = usePointerTo(colorLegendData);
-  
   const handleColorData = useCallback((colorData: Array<CanvasOverlayTypes.ColorData>) => {
-    const newColorLegendData = colorData
-        .filter(colorDatum => !(colorDatum.threshold.includes(Infinity) || colorDatum.threshold.includes(-Infinity)))
-        .map(colorDatum => {
-          return {
-            label: `${colorDatum.threshold[0]} to ${colorDatum.threshold[1]}`,
-            color: colorDatum.color
-          };
-        });
-    
-    if (JSON.stringify(colorLegendDataPointer.current) !== JSON.stringify(newColorLegendData)) {
-      setColorLegendData(newColorLegendData);
-    }
-  }, [colorLegendDataPointer]);
+    legendDispatcher({
+      type: LegendMode.DISCRETE_COLOR,
+      id: 'heatmap',
+      title: 'Nº of Collisions',
+      data: colorData
+          .filter(colorDatum => !(colorDatum.threshold.includes(Infinity) || colorDatum.threshold.includes(-Infinity)))
+          .map(colorDatum => {
+            return {
+              label: `${colorDatum.threshold[0]} to ${colorDatum.threshold[1]}`,
+              color: colorDatum.color
+            };
+          })
+    });
+  }, [legendDispatcher]);
   
   const handleShapeLegendData = useCallback((shapeLegendData: SVGOverlayTypes.LegendData[]) => {
-    setShapeLegendData(shapeLegendData);
-  }, []);
+    legendDispatcher({type: LegendMode.SHAPE, data: shapeLegendData, id: 'markers', title: 'Severe Collisions'});
+  }, [legendDispatcher]);
   
   const markerData = useMemo(() => data?.filter(d => d.Severity !== CollisionSeverity.slight), [data]);
   const contextData = useMemo(() => data, [data]);
-  
   
   const Main = <main className={styles.main}>
     <div className={styles.header}>
@@ -82,10 +84,13 @@ const Home: NextPage = () => {
                                     isZooming={isZooming}/>}
           </div>
           <div className={styles.layer}>
-            {map && <SVGOverlayNoNextSSR $onShapeLegendData$={handleShapeLegendData} map={map} data={markerData ?? []} isZooming={isZooming}/>}
+            {map &&
+            <SVGOverlayNoNextSSR $onShapeLegendData$={handleShapeLegendData} map={map} data={markerData ?? []}
+                                 isZooming={isZooming}/>}
           </div>
           <div className={styles.layer}>
-            {map && <LegendsOverlay shapeLegends={shapeLegendData} colorLegends={colorLegendData}/>}
+            {map &&
+            <LegendsOverlay legendStore={legendStore} shapeLegends={shapeLegendData} colorLegends={colorLegendData}/>}
           </div>
         </SharedLeafletMapNoNextSSR>
       </div>
