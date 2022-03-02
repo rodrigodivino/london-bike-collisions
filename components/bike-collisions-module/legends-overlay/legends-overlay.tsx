@@ -14,6 +14,8 @@ const LegendsOverlay: FunctionComponent<LegendsOverlayTypes.Props> = ({legendSto
   console.log("legendStore", legendStore);
   const legends = Object.values(legendStore);
   
+  const a = legends[0];
+  
   return <div className={styles.container}>
     <div className={styles.legendPane}>
       {
@@ -22,52 +24,29 @@ const LegendsOverlay: FunctionComponent<LegendsOverlayTypes.Props> = ({legendSto
             <span className={styles.legendTitle}>{legend.title}</span>
             {
               ((): ReactNode => {
-                console.log("legend", legend);
-                switch (legend.type) {
-                  case Legends.LegendMode.DISCRETE_COLOR:
-                    console.log("legend", legend);
-                    return legend.data.map(colorLegendLine => {
-                      return <div key={colorLegendLine.label} className={styles.colorLegendLine}>
-                        <div className={styles.colorLegendLineColor} style={{backgroundColor: colorLegendLine.color}}/>
-                        <div className={styles.colorLegendLineLabel}> {colorLegendLine.label} </div>
-                      </div>;
-                    });
-                  
-                  
-                  case Legends.LegendMode.SHAPE:
-                    return <></>;
+                if(Legends.isMode(LegendMode.DISCRETE_COLOR, legend)) {
+                  return legend.data.map(colorLegendLine => {
+                    return <div key={colorLegendLine.label} className={styles.colorLegendLine}>
+                      <div className={styles.colorLegendLineColor} style={{backgroundColor: colorLegendLine.color}}/>
+                      <div className={styles.colorLegendLineLabel}> {colorLegendLine.label} </div>
+                    </div>;
+                  });
+                } else if (Legends.isMode(LegendMode.SHAPE, legend)) {
+                  return legend.data.map(shapeLegendLine => {
+                    return <div key={shapeLegendLine.label} className={styles.markerLegendLine}>
+                        {shapeLegendLine.shape}
+                        <div className={styles.markerLegendLabel}> {shapeLegendLine.label}</div>
+                      </div>
+                  })
+                } else {
+                  throw new Error(`Legend type ${legend.type} not supported`)
                 }
               })()
             }
-            
             <hr/>
           </div>;
         })
       }
-      {/*<div className={styles.legendBox}>*/}
-      {/*  <span className={styles.legendTitle}>Nº of Collisions</span>*/}
-      {/*  /!*{*!/*/}
-      {/*  /!*  colorLegends.map(colorLegendLine => {*!/*/}
-      {/*  /!*    return <div key={colorLegendLine.label} className={styles.colorLegendLine}>*!/*/}
-      {/*  /!*      <div className={styles.colorLegendLineColor} style={{backgroundColor: colorLegendLine.color}}/>*!/*/}
-      {/*  /!*      <div className={styles.colorLegendLineLabel}> {colorLegendLine.label} </div>*!/*/}
-      {/*  /!*    </div>*!/*/}
-      {/*  /!*  })*!/*/}
-      {/*  /!*}*!/*/}
-      {/*</div>*/}
-      {/*<hr/>*/}
-      {/*<span className={styles.legendTitle}>Location</span>*/}
-      {/*<div className={styles.markerLegend}>*/}
-      {/*  /!*{*!/*/}
-      {/*  /!*  shapeLegends.map(shapeLegendLine => {*!/*/}
-      {/*  /!*    return <div key={shapeLegendLine.label} className={styles.markerLegendLine}>*!/*/}
-      {/*  /!*      {shapeLegendLine.shape}*!/*/}
-      {/*  /!*      <div className={styles.markerLegendLabel}> {shapeLegends[0].label} </div>*!/*/}
-      {/*  /!*    </div>*!/*/}
-      {/*  /!*  })*!/*/}
-      {/*  /!*}*!/*/}
-      {/*</div>*/}
-    
     </div>
   </div>;
 };

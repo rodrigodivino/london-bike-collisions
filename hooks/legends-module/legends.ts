@@ -14,7 +14,10 @@ export namespace Legends {
     SHAPE = 'SHAPE',
   }
   
-
+  export function isMode<T extends LegendMode>(type: T, legend: LegendRegisterAction<LegendMode>): legend is LegendRegisterAction<T> {
+    return legend.type === type;
+  }
+  
   
   export interface LegendDataTypes {
     [LegendMode.DISCRETE_COLOR]: Legends.ColorLegendData[],
