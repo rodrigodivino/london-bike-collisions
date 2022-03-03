@@ -3,7 +3,7 @@ import Head from 'next/head';
 import styles from '../styles/Home.module.css';
 import SharedLeafletMapNoNextSSR from "../components/shared-module/shared-leaflet-map/shared-leaflet-map-no-next-ssr";
 import * as L from 'leaflet';
-import {LatLngExpression} from 'leaflet';
+import {LatLngExpression, ZoomAnimEvent} from 'leaflet';
 import {useCallback, useMemo, useState} from "react";
 import {BikeCollision} from "../types/bike-collision";
 import {useCSV} from "../hooks/use-csv";
@@ -27,15 +27,14 @@ const Home: NextPage = () => {
   const data = useCSV<BikeCollision>('/data/bike_collisions.csv');
   
   const [{map}, setMapWrapper] = useState<{ map: L.Map | undefined }>({map: undefined});
-  const [isZooming, setIsZooming] = useState<boolean>(false);
+  const [isZooming, setIsZooming] = useState<ZoomAnimEvent | null>(null);
   const [legendStore, legendDispatcher] = useLegendStore();
-  
   
   const handleMapUpdate = useCallback((map: L.Map) => {
     setMapWrapper({map});
   }, []);
   
-  const handleMapZoomStateUpdate = useCallback((isZooming: boolean) => {
+  const handleMapZoomStateUpdate = useCallback((isZooming: ZoomAnimEvent | null) => {
     setIsZooming(isZooming);
   }, []);
   

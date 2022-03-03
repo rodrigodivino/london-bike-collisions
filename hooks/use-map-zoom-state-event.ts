@@ -1,5 +1,5 @@
 import {MutableRefObject, useEffect} from "react";
-import {Map as LMap} from 'leaflet'
+import {Map as LMap, ZoomAnimEvent} from 'leaflet';
 
 /**
  * Listen to map changes in the zoom state and outputs whenever it starts or stops zooming
@@ -8,18 +8,18 @@ import {Map as LMap} from 'leaflet'
  */
 export const useMapZoomStateEvent = (
     mapRef: MutableRefObject<LMap | undefined>,
-    $onStateZoomChange$?: (isZooming: boolean) => void
+    $onStateZoomChange$?: (isZooming: ZoomAnimEvent | null) => void
 ): void => {
   useEffect(() => {
     if(!mapRef.current) return;
     const map = mapRef.current;
     
-    map.on('zoomstart', () => {
-      $onStateZoomChange$?.(true);
+    map.on('zoomanim', (e) => {
+      $onStateZoomChange$?.(e);
     });
-  
+    
     map.on('zoomend', () => {
-      $onStateZoomChange$?.(false);
+      $onStateZoomChange$?.(null);
     });
     
     return () => {

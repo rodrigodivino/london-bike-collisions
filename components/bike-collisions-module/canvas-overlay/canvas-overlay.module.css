@@ -13,6 +13,8 @@
 }
 
 .zooming {
-    opacity: 0.3;
-    filter: grayscale(100%);
+    /*opacity: 0.3;*/
+    /*filter: grayscale(100%);*/
+    /*transform: scale(0.3);*/
+    transition: transform 0.3s;
 }

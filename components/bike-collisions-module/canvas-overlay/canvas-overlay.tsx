@@ -1,4 +1,4 @@
-import {FunctionComponent, useEffect, useLayoutEffect, useMemo, useState} from "react";
+import {FunctionComponent, useEffect, useLayoutEffect, useMemo, useRef, useState} from "react";
 import {CanvasOverlayTypes} from "./canvas-overlay.types";
 import styles from './canvas-overlay.module.css';
 import {useQuickDOMRef} from "../../../hooks/use-quick-dom-ref";
@@ -138,9 +138,37 @@ const CanvasOverlay: FunctionComponent<CanvasOverlayTypes.Props> = (
     }
   }
   
+  let translate = '';
+  
+  const lastTranslate = useRef<string>(translate);
+  
+  
+  // TODO: Test further
+  // TODO: See why it doesn't work on the zoom click at the legend
+  // TODO: Apply to SVG abstract into function
+  if(isZooming) {
+    const currentMapCenter = map.getCenter();
+    const soonToBeMapCenter = isZooming?.center;
+    if(JSON.stringify(currentMapCenter) !== JSON.stringify(soonToBeMapCenter)) {
+      const zoomDiff = isZooming?.zoom - map.getZoom();
+      console.log("zoomDiff", zoomDiff);
+      const currentProjectedCenter = map.project(currentMapCenter);
+      const soonToBeCenterProjected = map.project(soonToBeMapCenter);
+      const diffX = currentProjectedCenter.x - soonToBeCenterProjected.x;
+      const diffY = currentProjectedCenter.y - soonToBeCenterProjected.y;
+      translate = `scale(${2 ** zoomDiff})translate(${diffX}px, ${diffY}px)`
+      lastTranslate.current = translate;
+    } else {
+      translate = lastTranslate.current;
+    }
+  } else {
+    translate = 'translate(0,0)'
+  }
+  
+  
   
   return <div className={styles.wrapper}>
-    <canvas key="canvas" width={width} height={height} ref={canvasRef}
+    <canvas style={{transform: translate}} key="canvas" width={width} height={height} ref={canvasRef}
             className={`${styles.canvas} ${isZooming ? styles.zooming : ''}`}>
     
     </canvas>

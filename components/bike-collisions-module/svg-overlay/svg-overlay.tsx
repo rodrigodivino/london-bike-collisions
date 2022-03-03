@@ -19,7 +19,6 @@ const SVGOverlay: FunctionComponent<SVGOverlayTypes.Props> = ({map, data, isZoom
           data
       ));
     } else {
-      console.log('resetting')
       setProjectedData([]);
     }
   }, [map, data, isZooming]);
