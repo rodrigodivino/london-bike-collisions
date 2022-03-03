@@ -11,7 +11,6 @@ export const getProjectedLayout = <Datum>(
     projection: (d: Datum) => {x: number, y: number},
     data: Datum[],
 ): Array<ProjectedLayout<Datum>> => {
-  
   return data.map(d => {
     const {x, y} = projection(d) ?? [0, 0];
     return {

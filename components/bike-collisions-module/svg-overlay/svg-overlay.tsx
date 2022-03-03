@@ -5,18 +5,21 @@ import {BikeCollision} from "../../../types/bike-collision";
 import {getProjectedLayout, ProjectedLayout} from "../../../hooks/get-projected-layout";
 import {useResponsiveMural} from "../../../hooks/use-responsive-mural";
 
+const MARKER_ZOOM_THRESHOLD = 15;
 const SVGOverlay: FunctionComponent<SVGOverlayTypes.Props> = ({map, data, isZooming, $onShapeLegendData$}) => {
   const [projectedData, setProjectedData] = useState<ProjectedLayout<BikeCollision>[]>([]);
   const svgRef = useRef<SVGSVGElement>(null);
   const [width, height] = useResponsiveMural(svgRef);
 
+  
   useLayoutEffect(() => {
-    if (map.getZoom() >= 15) {
+    if (map.getZoom() >= MARKER_ZOOM_THRESHOLD) {
       setProjectedData(getProjectedLayout<BikeCollision>(
           d => map.project([d.Latitude, d.Longitude]),
           data
       ));
     } else {
+      console.log('resetting')
       setProjectedData([]);
     }
   }, [map, data, isZooming]);
@@ -35,6 +38,7 @@ const SVGOverlay: FunctionComponent<SVGOverlayTypes.Props> = ({map, data, isZoom
         })
         .filter(d => d.x > 0 && d.x <= width && d.y > 0 && d.y <= height);
   }, [projectedData, projectionOrigin.x, projectionOrigin.y, width, height]);
+  
   
   function circlePath(cx: number, cy: number) {
     const r = 2.5;
@@ -63,7 +67,7 @@ const SVGOverlay: FunctionComponent<SVGOverlayTypes.Props> = ({map, data, isZoom
   const circleMesh = SVGProjectedData.map(l => circlePath(l.x, l.y)).join('');
   
   useEffect(() => {
-    if (SVGProjectedData?.length > 0) {
+    if (map.getZoom() >= MARKER_ZOOM_THRESHOLD) {
       $onShapeLegendData$?.(
           [
             {
@@ -78,7 +82,7 @@ const SVGOverlay: FunctionComponent<SVGOverlayTypes.Props> = ({map, data, isZoom
     } else {
       $onShapeLegendData$?.([]);
     }
-  }, [$onShapeLegendData$, SVGProjectedData]);
+  }, [$onShapeLegendData$, map, isZooming]);
   
   
   
