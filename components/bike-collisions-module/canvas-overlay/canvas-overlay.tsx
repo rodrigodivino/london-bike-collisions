@@ -11,7 +11,6 @@ import {CanvasOverlayConst} from "./canvas-overlay.const";
 import {LatLng} from "leaflet";
 import getNiceThresholds from "../../../hooks/get-nice-thresholds";
 import {getOpaqueEquivalent} from "../../../hooks/get-opaque-equivalent";
-import {useWDYU} from "../../../hooks/use-wdyu";
 
 const CanvasOverlay: FunctionComponent<CanvasOverlayTypes.Props> = (
     {
@@ -31,18 +30,6 @@ const CanvasOverlay: FunctionComponent<CanvasOverlayTypes.Props> = (
         data
     ));
   }, [map, data, isZooming]);
-  
-  
-  useWDYU('canvas', {
-    map,
-    data,
-    isZooming,
-    $onColorLegendData$,
-    canvasRef,
-    width,
-    height,
-    projectedData
-  })
   
   
   const [hexbinData, hexagonPathString, binRadius] = useMemo(() => {

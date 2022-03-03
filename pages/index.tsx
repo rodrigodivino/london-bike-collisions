@@ -72,10 +72,9 @@ const Home: NextPage = () => {
   
   const handleDisabledLegendClick = useCallback((legend: LegendRegistry<LegendMode>, item: LegendDataTypes[LegendMode] | null) => {
     if(legend.id === 'markers' && legend?.options?.disabled) {
-      console.log("legend", legend);
-      console.log("item", item);
+      map?.setZoom(15);
     }
-  }, [])
+  }, [map])
   
   const markerData = useMemo(() => data?.filter(d => d.Severity !== CollisionSeverity.slight), [data]);
   const contextData = useMemo(() => data, [data]);

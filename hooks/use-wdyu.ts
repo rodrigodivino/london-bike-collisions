@@ -4,18 +4,18 @@ export const useWDYU = (name: string, propsAndState: Record<string, unknown>) =>
   const previousPropsAndState = useRef<Record<string, unknown>>();
   useEffect(() => {
     if (previousPropsAndState.current) {
-      const allKeys = Object.keys({ ...previousPropsAndState.current, ...propsAndState });
-      const changesObj: Record<string, unknown> = {};
+      const allKeys = new Set([... Object.keys(previousPropsAndState.current), ... Object.keys(propsAndState)]);
+      const changes: Record<string, unknown> = {};
       allKeys.forEach((key) => {
         if (previousPropsAndState.current![key] !== propsAndState[key]) {
-          changesObj[key] = {
-            from: previousPropsAndState.current![key],
-            to: propsAndState[key],
+          changes[key] = {
+            previous: previousPropsAndState.current![key],
+            current: propsAndState[key],
           };
         }
       });
-      if (Object.keys(changesObj).length) {
-        console.log("[why-did-you-update]", name, changesObj);
+      if (Object.keys(changes).length) {
+        console.warn("Component Changes: ", name, changes);
       }
     }
     previousPropsAndState.current = propsAndState;
