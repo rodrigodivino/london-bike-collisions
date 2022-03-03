@@ -11,14 +11,14 @@ import {CanvasOverlayConst} from "./canvas-overlay.const";
 import {LatLng} from "leaflet";
 import getNiceThresholds from "../../../hooks/get-nice-thresholds";
 import {getOpaqueEquivalent} from "../../../hooks/get-opaque-equivalent";
-import {Legends} from "../../../hooks/legends-module/legends";
 
-const CanvasOverlay: FunctionComponent<CanvasOverlayTypes.Props> = ({
-                                                                      map,
-                                                                      data,
-                                                                      isZooming,
-                                                                      $onColorLegendData$,
-                                                                    }) => {
+const CanvasOverlay: FunctionComponent<CanvasOverlayTypes.Props> = (
+    {
+      map,
+      data,
+      isZooming,
+      $onColorLegendData$
+    }) => {
   const [canvas, canvasRef] = useQuickDOMRef<HTMLCanvasElement>();
   const [width, height] = useResponsiveMural(canvasRef);
   const [projectedContextData, setProjectedContextData] = useState<ProjectedLayout<BikeCollision>[]>([]);
