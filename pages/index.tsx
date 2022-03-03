@@ -62,14 +62,19 @@ const Home: NextPage = () => {
         data: shapeLegendData,
         id: 'markers',
         title: 'Collision Locations',
-        disabled: shapeLegendData.length === 0,
-        disabledMessage: 'Zoom to see'
+        options: {
+          disabled: shapeLegendData.length === 0,
+          disabledMessage: 'Zoom to see',
+          disabledIsClickable: true,
+        }
       });
   }, [legendDispatcher]);
   
   const handleDisabledLegendClick = useCallback((legend: LegendRegistry<LegendMode>, item: LegendDataTypes[LegendMode] | null) => {
-    console.log("legend", legend);
-    console.log("item", item);
+    if(legend.id === 'markers' && legend?.options?.disabled) {
+      console.log("legend", legend);
+      console.log("item", item);
+    }
   }, [])
   
   const markerData = useMemo(() => data?.filter(d => d.Severity !== CollisionSeverity.slight), [data]);

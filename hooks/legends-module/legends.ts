@@ -28,8 +28,14 @@ export namespace Legends {
     id: string,
     title: string,
     data: Legends.LegendDataTypes[T][],
+    options?: RegistryOptions,
+  }
+  
+  export interface RegistryOptions {
     disabled?: boolean,
     disabledMessage?: string,
+    disabledIsClickable?: boolean,
+    isClickable?: boolean,
   }
   
   /**

@@ -24,8 +24,6 @@
 }
 
 .colorLegendLine {
-    pointer-events: auto;
-    cursor: pointer;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -51,8 +49,6 @@
 }
 
 .markerLegendLine{
-    pointer-events: auto;
-    cursor: pointer;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -68,8 +64,7 @@
 
 
 .disabledMessage {
-    cursor: pointer;
-    pointer-events: auto;
+
     display: flex;
     align-items: center;
     align-content: center;
@@ -86,6 +81,11 @@
     max-width: 100px;
 }
 
+
+.clickable {
+    cursor: pointer;
+    pointer-events: auto;
+}
 
 
 
