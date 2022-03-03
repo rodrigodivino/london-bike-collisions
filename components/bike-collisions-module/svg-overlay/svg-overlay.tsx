@@ -81,12 +81,6 @@ const SVGOverlay: FunctionComponent<SVGOverlayTypes.Props> = ({map, data, isZoom
   }, [$onShapeLegendData$, SVGProjectedData]);
   
   
-  // TODO: Add fatal markers at a lower zoom level
-  // TODO: Add serious markers at a even lower zoom level
-  // TODO: Adjust optimization of projection to the fatal marker zoom level
-  // TODO: Add zoom level visibilities to const
-  // TODO: Generalize mesh variable names
-  // TODO: Limit zoom levels to first tile change road
   
   return <svg ref={svgRef} className={styles.svg}>
     <g className={`${isZooming ? styles.zooming : ''}`}>

@@ -11,6 +11,7 @@ import {CanvasOverlayConst} from "./canvas-overlay.const";
 import {LatLng} from "leaflet";
 import getNiceThresholds from "../../../hooks/get-nice-thresholds";
 import {getOpaqueEquivalent} from "../../../hooks/get-opaque-equivalent";
+import {useWDYU} from "../../../hooks/use-wdyu";
 
 const CanvasOverlay: FunctionComponent<CanvasOverlayTypes.Props> = (
     {
@@ -21,44 +22,62 @@ const CanvasOverlay: FunctionComponent<CanvasOverlayTypes.Props> = (
     }) => {
   const [canvas, canvasRef] = useQuickDOMRef<HTMLCanvasElement>();
   const [width, height] = useResponsiveMural(canvasRef);
-  const [projectedContextData, setProjectedContextData] = useState<ProjectedLayout<BikeCollision>[]>([]);
+  const [projectedData, setProjectedData] = useState<ProjectedLayout<BikeCollision>[]>([]);
   
   useLayoutEffect(() => {
-    setProjectedContextData(getProjectedLayout<BikeCollision>(
+    if(isZooming) return;
+    setProjectedData(getProjectedLayout<BikeCollision>(
         d => map.project([d.Latitude, d.Longitude]),
         data
     ));
   }, [map, data, isZooming]);
   
   
-  const bounds = new LatLng(data[0].Latitude, data[0].Longitude).toBounds(CanvasOverlayConst.BIN_RADIUS_METERS);
-  const binRadius = Math.abs(map.project(bounds.getNorthEast()).x - map.project(bounds.getNorthWest()).x);
+  useWDYU('canvas', {
+    map,
+    data,
+    isZooming,
+    $onColorLegendData$,
+    canvasRef,
+    width,
+    height,
+    projectedData
+  })
   
-  const [hexbinData, hexagonPathString] = useMemo(() => {
-    const relativeBinPoint = projectedContextData[0] ?? {x: 0, y: 0};
+  
+  const [hexbinData, hexagonPathString, binRadius] = useMemo(() => {
+    const measurementBounds = new LatLng(data[0].Latitude, data[0].Longitude).toBounds(CanvasOverlayConst.BIN_RADIUS_METERS);
+  
+    const binRadius = Math.abs(map.project(measurementBounds.getNorthEast()).x - map.project(measurementBounds.getNorthWest()).x);
+    
+    const relativeBinPoint = projectedData[0] ?? {x: 0, y: 0};
     
     const binGenerator = hexbin<ProjectedLayout<BikeCollision>>()
         .x(d => d.x - relativeBinPoint.x)
         .y(d => d.y - relativeBinPoint.y)
         .radius(binRadius);
     
-    const binData = binGenerator(projectedContextData);
+    const binData = binGenerator(projectedData);
     
     binData.forEach(bin => {
       bin.x += relativeBinPoint.x;
       bin.y += relativeBinPoint.y;
     });
     
-    return [binData, binGenerator.hexagon()];
-  }, [projectedContextData, binRadius]);
+    return [binData, binGenerator.hexagon(), binRadius];
+  }, [data, map, projectedData]);
   
-  const maxBinLength = max(hexbinData, b => b.length) as number;
+  const maxBinLength = useMemo(() => {
+    return max(hexbinData, b => b.length) as number
+  }, [hexbinData]);
   
-  const colorThresholds = getNiceThresholds(
-      CanvasOverlayConst.APPROXIMATE_NUMBER_OF_COLORS + 1,
-      maxBinLength,
-      CanvasOverlayConst.MINIMUM_VISIBLE_HEX_VALUE
-  );
+  const colorThresholds = useMemo(() => {
+    return getNiceThresholds(
+        CanvasOverlayConst.APPROXIMATE_NUMBER_OF_COLORS + 1,
+        maxBinLength,
+        CanvasOverlayConst.MINIMUM_VISIBLE_HEX_VALUE
+    );
+  }, [maxBinLength]) 
   
   const bucketColors = colorThresholds.slice(0, -1).map((t, i, a) => {
     const v = i / (a.length - 1);
