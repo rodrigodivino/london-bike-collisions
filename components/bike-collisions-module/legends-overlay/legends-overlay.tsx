@@ -2,12 +2,17 @@ import {FunctionComponent, ReactNode} from "react";
 import {LegendsOverlayTypes} from "./legends-overlay.types";
 import styles from './legends-overlay.module.css';
 import {Legends} from "../../../hooks/legends-module/legends";
+import {ascending} from "d3";
 import LegendMode = Legends.LegendMode;
 import LegendRegistry = Legends.LegendRegistry;
 import LegendDataTypes = Legends.LegendDataTypes;
 
 const LegendsOverlay: FunctionComponent<LegendsOverlayTypes.Props> = ({legendStore, $onLegendClick$}) => {
-  const legends = Object.values(legendStore);
+  const legends = Object
+      .values(legendStore)
+      .sort((a, b) => {
+        return ascending(a.mode, b.mode);
+      });
   
   const handleLegendClick = (legend: LegendRegistry<LegendMode>, item: LegendDataTypes[LegendMode] | null) => {
     if (legend?.options?.disabledIsClickable) {
