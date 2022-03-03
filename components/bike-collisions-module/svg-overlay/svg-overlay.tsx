@@ -9,7 +9,7 @@ const SVGOverlay: FunctionComponent<SVGOverlayTypes.Props> = ({map, data, isZoom
   const [projectedData, setProjectedData] = useState<ProjectedLayout<BikeCollision>[]>([]);
   const svgRef = useRef<SVGSVGElement>(null);
   const [width, height] = useResponsiveMural(svgRef);
-  
+
   useLayoutEffect(() => {
     if (map.getZoom() >= 15) {
       setProjectedData(getProjectedLayout<BikeCollision>(
@@ -26,9 +26,14 @@ const SVGOverlay: FunctionComponent<SVGOverlayTypes.Props> = ({map, data, isZoom
   
   const SVGProjectedData = useMemo(() => {
     return projectedData
-        .map(d => ({...d, x: d.x - projectionOrigin.x, y: d.y - projectionOrigin.y}))
+        .map(d => {
+          return {
+            x: d.x - projectionOrigin.x,
+            y: d.y - projectionOrigin.y,
+            d: d
+          }
+        })
         .filter(d => d.x > 0 && d.x <= width && d.y > 0 && d.y <= height);
-    
   }, [projectedData, projectionOrigin.x, projectionOrigin.y, width, height]);
   
   function circlePath(cx: number, cy: number) {

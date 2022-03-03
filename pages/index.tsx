@@ -28,7 +28,6 @@ const Home: NextPage = () => {
   const [isZooming, setIsZooming] = useState<boolean>(false);
   const [legendStore, legendDispatcher] = useLegendStore();
   
-  console.log("legendStore", legendStore);
   
   const handleMapUpdate = useCallback((map: L.Map) => {
     setMapWrapper({map});
