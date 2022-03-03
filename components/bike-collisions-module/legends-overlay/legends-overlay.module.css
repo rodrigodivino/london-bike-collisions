@@ -24,6 +24,8 @@
 }
 
 .colorLegendLine {
+    pointer-events: auto;
+    cursor: pointer;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -49,6 +51,8 @@
 }
 
 .markerLegendLine{
+    pointer-events: auto;
+    cursor: pointer;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -56,21 +60,33 @@
 }
 
 .markerLegendLabel {
-    pointer-events: all;
     text-align: end;
     padding-left: 5px;
     max-width: 100%;
     min-width: 0;
 }
 
-/*.markerLegendShape {*/
-/*    display: flex;*/
-/*    align-items: center;*/
-/*    align-content: center;*/
-/*    justify-items: center;*/
-/*    justify-content: center;*/
-/*    flex-shrink: 0;*/
-/*    width: 20px;*/
-/*    height: 100%;*/
-/*}*/
+
+.disabledMessage {
+    cursor: pointer;
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    align-content: center;
+    justify-items: center;
+    justify-content: center;
+    opacity: 0.8;
+    background-color: #DEDEDE;
+}
+
+.disabledMessage span {
+    padding: 2px;
+    color: #515151;
+    text-align: center;
+    max-width: 100px;
+}
+
+
+
+
 

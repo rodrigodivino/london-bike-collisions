@@ -11,8 +11,8 @@ export namespace Legends {
    * The data types for each mode
    */
   export interface LegendDataTypes {
-    [LegendMode.SHAPE]: {shape: JSX.Element,label: string }[],
-    [LegendMode.DISCRETE_COLOR]: {color: string, label: string }[],
+    [LegendMode.SHAPE]: {shape: JSX.Element,label: string },
+    [LegendMode.DISCRETE_COLOR]: {color: string, label: string },
   }
   
   /**
@@ -27,7 +27,9 @@ export namespace Legends {
     mode: T,
     id: string,
     title: string,
-    data: Legends.LegendDataTypes[T],
+    data: Legends.LegendDataTypes[T][],
+    disabled?: boolean,
+    disabledMessage?: string,
   }
   
   /**

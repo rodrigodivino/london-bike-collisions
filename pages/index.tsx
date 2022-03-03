@@ -16,6 +16,8 @@ import {SVGOverlayTypes} from "../components/bike-collisions-module/svg-overlay/
 import {Legends} from "../hooks/legends-module/legends";
 import {useLegendStore} from "../hooks/legends-module/use-legend-store";
 import LegendMode = Legends.LegendMode;
+import LegendRegistry = Legends.LegendRegistry;
+import LegendDataTypes = Legends.LegendDataTypes;
 
 
 const INITIAL_CENTER: LatLngExpression = {lat: 51.507359, lng: -0.126439};
@@ -55,8 +57,20 @@ const Home: NextPage = () => {
   }, [legendDispatcher]);
   
   const handleShapeLegendData = useCallback((shapeLegendData: SVGOverlayTypes.LegendData[]) => {
-      legendDispatcher({mode: LegendMode.SHAPE, data: shapeLegendData, id: 'markers', title: 'Severe Collisions'});
+      legendDispatcher({
+        mode: LegendMode.SHAPE,
+        data: shapeLegendData,
+        id: 'markers',
+        title: 'Collision Locations',
+        disabled: shapeLegendData.length === 0,
+        disabledMessage: 'Zoom to see'
+      });
   }, [legendDispatcher]);
+  
+  const handleDisabledLegendClick = useCallback((legend: LegendRegistry<LegendMode>, item: LegendDataTypes[LegendMode] | null) => {
+    console.log("legend", legend);
+    console.log("item", item);
+  }, [])
   
   const markerData = useMemo(() => data?.filter(d => d.Severity !== CollisionSeverity.slight), [data]);
   const contextData = useMemo(() => data, [data]);
@@ -88,7 +102,7 @@ const Home: NextPage = () => {
           </div>
           <div className={styles.layer}>
             {map &&
-            <LegendsOverlay legendStore={legendStore}/>}
+            <LegendsOverlay $onLegendClick$={handleDisabledLegendClick} legendStore={legendStore}/>}
           </div>
         </SharedLeafletMapNoNextSSR>
       </div>
