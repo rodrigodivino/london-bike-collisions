@@ -1,30 +1,33 @@
-import {FunctionComponent, useEffect, useLayoutEffect, useMemo, useRef, useState} from "react";
+import {FunctionComponent, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState} from "react";
 import {SVGOverlayTypes} from "./svg-overlay.types";
 import styles from './svg-overlay.module.css';
 import {BikeCollision} from "../../../types/bike-collision";
 import {getProjectedLayout, ProjectedLayout} from "../../../hooks/get-projected-layout";
 import {useResponsiveMural} from "../../../hooks/use-responsive-mural";
+import {MapContext} from "../../shared-module/shared-leaflet-map/map-context";
 
 const MARKER_ZOOM_THRESHOLD = 15;
-const SVGOverlay: FunctionComponent<SVGOverlayTypes.Props> = ({map, data, isZooming, $onShapeLegendData$}) => {
+const SVGOverlay: FunctionComponent<SVGOverlayTypes.Props> = ({data, $onShapeLegendData$}) => {
   const [projectedData, setProjectedData] = useState<ProjectedLayout<BikeCollision>[]>([]);
   const svgRef = useRef<SVGSVGElement>(null);
   const [width, height] = useResponsiveMural(svgRef);
 
+  const [mapContextData,] = useContext(MapContext);
   
   useLayoutEffect(() => {
-    if (map.getZoom() >= MARKER_ZOOM_THRESHOLD) {
+    if(mapContextData?.zoomAnim) return;
+    if ((mapContextData?.mapRef?.current?.getZoom() ?? 0) >= MARKER_ZOOM_THRESHOLD) {
       setProjectedData(getProjectedLayout<BikeCollision>(
-          d => map.project([d.Latitude, d.Longitude]),
+          d => mapContextData?.mapRef?.current?.project([d.Latitude, d.Longitude]) ?? {x: 0, y: 0},
           data
       ));
     } else {
       setProjectedData([]);
     }
-  }, [map, data, isZooming]);
+  }, [data, mapContextData?.mapRef, mapContextData?.zoomAnim]);
   
   
-  const projectionOrigin = map.project(map.getBounds().getNorthWest());
+  const projectionOrigin = mapContextData?.mapRef?.current?.project(mapContextData?.mapRef?.current?.getBounds().getNorthWest()) ?? {x: 0, y: 0};
   
   const SVGProjectedData = useMemo(() => {
     return projectedData
@@ -66,7 +69,7 @@ const SVGOverlay: FunctionComponent<SVGOverlayTypes.Props> = ({map, data, isZoom
   const circleMesh = SVGProjectedData.map(l => circlePath(l.x, l.y)).join('');
   
   useEffect(() => {
-    if (map.getZoom() >= MARKER_ZOOM_THRESHOLD) {
+    if ((mapContextData?.mapRef?.current?.getZoom() ?? 0) >= MARKER_ZOOM_THRESHOLD) {
       $onShapeLegendData$?.(
           [
             {
@@ -81,20 +84,16 @@ const SVGOverlay: FunctionComponent<SVGOverlayTypes.Props> = ({map, data, isZoom
     } else {
       $onShapeLegendData$?.([]);
     }
-  }, [$onShapeLegendData$, map, isZooming]);
+  }, [$onShapeLegendData$, mapContextData?.mapRef, mapContextData?.zoomAnim]);
   
   
   
   return <svg ref={svgRef} className={styles.svg}>
-    <g className={`${isZooming ? styles.zooming : ''}`}>
+    <g className={`${mapContextData?.zoomAnim ? styles.zooming : ''}`}>
       <g className="marker">
         <g>
           <path className={styles.circleMesh} d={circleMesh}/>
         </g>
-        ;
-        {/*<g>*/}
-        {/*  <path className={styles.circleMeshRing} d={circleMesh2}/>*/}
-        {/*</g>;*/}
       </g>
     
     </g>

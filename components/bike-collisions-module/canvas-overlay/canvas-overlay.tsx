@@ -1,4 +1,4 @@
-import {FunctionComponent, useEffect, useLayoutEffect, useMemo, useRef, useState} from "react";
+import {FunctionComponent, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState} from "react";
 import {CanvasOverlayTypes} from "./canvas-overlay.types";
 import styles from './canvas-overlay.module.css';
 import {useQuickDOMRef} from "../../../hooks/use-quick-dom-ref";
@@ -11,31 +11,33 @@ import {CanvasOverlayConst} from "./canvas-overlay.const";
 import {LatLng} from "leaflet";
 import getNiceThresholds from "../../../hooks/get-nice-thresholds";
 import {getOpaqueEquivalent} from "../../../hooks/get-opaque-equivalent";
+import {MapContext} from "../../shared-module/shared-leaflet-map/map-context";
 
 const CanvasOverlay: FunctionComponent<CanvasOverlayTypes.Props> = (
     {
-      map,
       data,
-      isZooming,
       $onColorLegendData$
     }) => {
   const [canvas, canvasRef] = useQuickDOMRef<HTMLCanvasElement>();
   const [width, height] = useResponsiveMural(canvasRef);
   const [projectedData, setProjectedData] = useState<ProjectedLayout<BikeCollision>[]>([]);
+  const [mapContextData, ] = useContext(MapContext);
+  
+  console.log("mapContextData", mapContextData);
   
   useLayoutEffect(() => {
-    if(isZooming) return;
+    if(mapContextData?.zoomAnim) return;
     setProjectedData(getProjectedLayout<BikeCollision>(
-        d => map.project([d.Latitude, d.Longitude]),
+        d => mapContextData?.mapRef?.current?.project([d.Latitude, d.Longitude]) ?? {x: 0, y:0},
         data
     ));
-  }, [map, data, isZooming]);
+  }, [data, mapContextData?.mapRef, mapContextData?.zoomAnim]);
   
   
   const [hexbinData, hexagonPathString, binRadius] = useMemo(() => {
     const measurementBounds = new LatLng(data[0].Latitude, data[0].Longitude).toBounds(CanvasOverlayConst.BIN_RADIUS_METERS);
   
-    const binRadius = Math.abs(map.project(measurementBounds.getNorthEast()).x - map.project(measurementBounds.getNorthWest()).x);
+    const binRadius = Math.abs((mapContextData?.mapRef?.current?.project(measurementBounds.getNorthEast()).x ?? 0) - (mapContextData?.mapRef?.current?.project(measurementBounds.getNorthWest()).x ?? 0));
     
     const relativeBinPoint = projectedData[0] ?? {x: 0, y: 0};
     
@@ -52,7 +54,7 @@ const CanvasOverlay: FunctionComponent<CanvasOverlayTypes.Props> = (
     });
     
     return [binData, binGenerator.hexagon(), binRadius];
-  }, [data, map, projectedData]);
+  }, [data, mapContextData?.mapRef, projectedData]);
   
   const maxBinLength = useMemo(() => {
     return max(hexbinData, b => b.length) as number
@@ -96,7 +98,7 @@ const CanvasOverlay: FunctionComponent<CanvasOverlayTypes.Props> = (
   });
   
   
-  const projectionOrigin = map.project(map.getBounds().getNorthWest());
+  const projectionOrigin = mapContextData?.mapRef?.current?.project(mapContextData?.mapRef?.current?.getBounds().getNorthWest()) ?? {x: 0, y: 0};
   
   const hexagonPath2D = new Path2D(hexagonPathString);
   
@@ -143,12 +145,12 @@ const CanvasOverlay: FunctionComponent<CanvasOverlayTypes.Props> = (
   const lastTranslate = useRef<string>(translate);
   
   
-  if(isZooming) {
-    const currentMapCenter = map.getCenter();
-    const soonToBeMapCenter = isZooming?.center;
-      const zoomDiff = isZooming?.zoom - map.getZoom();
-      const currentProjectedCenter = map.project(currentMapCenter);
-      const soonToBeCenterProjected = map.project(soonToBeMapCenter);
+  if(mapContextData?.zoomAnim) {
+    const currentMapCenter = mapContextData?.mapCenter;
+    const soonToBeMapCenter = mapContextData?.zoomAnim?.center;
+      const zoomDiff = mapContextData?.zoomAnim?.zoom - (mapContextData?.mapRef?.current?.getZoom() ?? 0);
+      const currentProjectedCenter = mapContextData?.mapRef?.current?.project(currentMapCenter) ?? {x: 0, y: 0};
+      const soonToBeCenterProjected = mapContextData?.mapRef?.current?.project(soonToBeMapCenter) ?? {x: 0, y: 0};
       const diffX = currentProjectedCenter.x - soonToBeCenterProjected.x;
       const diffY = currentProjectedCenter.y - soonToBeCenterProjected.y;
       translate = `scale(${2 ** zoomDiff})translate(${diffX}px, ${diffY}px)`
@@ -161,7 +163,7 @@ const CanvasOverlay: FunctionComponent<CanvasOverlayTypes.Props> = (
   
   return <div className={styles.wrapper}>
     <canvas style={{transform: translate}} key="canvas" width={width} height={height} ref={canvasRef}
-            className={`${styles.canvas} ${isZooming ? styles.zooming : ''}`}>
+            className={`${styles.canvas} ${mapContextData?.zoomAnim ? styles.zooming : ''}`}>
     
     </canvas>
   </div>;
