@@ -15,6 +15,7 @@ export const useMapZoomStateEvent = (
     const map = mapRef.current;
     
     map.on('zoomanim', (e) => {
+      console.log("e", e);
       $onStateZoomChange$?.(e);
     });
     

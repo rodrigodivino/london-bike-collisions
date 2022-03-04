@@ -143,24 +143,16 @@ const CanvasOverlay: FunctionComponent<CanvasOverlayTypes.Props> = (
   const lastTranslate = useRef<string>(translate);
   
   
-  // TODO: Test further
-  // TODO: See why it doesn't work on the zoom click at the legend
-  // TODO: Apply to SVG abstract into function
   if(isZooming) {
     const currentMapCenter = map.getCenter();
     const soonToBeMapCenter = isZooming?.center;
-    if(JSON.stringify(currentMapCenter) !== JSON.stringify(soonToBeMapCenter)) {
       const zoomDiff = isZooming?.zoom - map.getZoom();
-      console.log("zoomDiff", zoomDiff);
       const currentProjectedCenter = map.project(currentMapCenter);
       const soonToBeCenterProjected = map.project(soonToBeMapCenter);
       const diffX = currentProjectedCenter.x - soonToBeCenterProjected.x;
       const diffY = currentProjectedCenter.y - soonToBeCenterProjected.y;
       translate = `scale(${2 ** zoomDiff})translate(${diffX}px, ${diffY}px)`
       lastTranslate.current = translate;
-    } else {
-      translate = lastTranslate.current;
-    }
   } else {
     translate = 'translate(0,0)'
   }
