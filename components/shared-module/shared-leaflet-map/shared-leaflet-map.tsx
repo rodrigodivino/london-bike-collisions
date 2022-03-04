@@ -19,10 +19,9 @@ const SharedLeafletMap: FunctionComponent<PropsWithChildren<SharedLeafletMapType
   
   // Map initialization
   useEffect(() => {
-    if (!mapContainerRef.current) {
+    if (!mapContainerRef.current || mapRef.current) {
       return;
     }
-  
   
     mapRef.current = L.map(mapContainerRef.current).setView(initialCenter, initialZoom);
     
@@ -45,7 +44,6 @@ const SharedLeafletMap: FunctionComponent<PropsWithChildren<SharedLeafletMapType
     if (!(map && setMapData)) {
       return;
     }
-    
     
     map.on('move', () => {
       setMapData((previousMapData) => {
@@ -74,6 +72,13 @@ const SharedLeafletMap: FunctionComponent<PropsWithChildren<SharedLeafletMapType
         mapCenter: map.getCenter(),
         zoomAnim: undefined
       });
+    });
+  
+    setMapData({
+      mapRef,
+      mapBounds: map.getBounds(),
+      mapCenter: map.getCenter(),
+      zoomAnim: undefined
     });
     
     return () => {

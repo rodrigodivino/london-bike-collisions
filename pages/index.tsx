@@ -2,9 +2,8 @@ import type {NextPage} from 'next';
 import Head from 'next/head';
 import styles from '../styles/Home.module.css';
 import SharedLeafletMapNoNextSSR from "../components/shared-module/shared-leaflet-map/shared-leaflet-map-no-next-ssr";
-import * as L from 'leaflet';
-import {LatLngExpression, ZoomAnimEvent} from 'leaflet';
-import {useCallback, useContext, useMemo, useState} from "react";
+import {LatLngExpression} from 'leaflet';
+import {useCallback, useContext, useMemo} from "react";
 import {BikeCollision} from "../types/bike-collision";
 import {useCSV} from "../hooks/use-csv";
 import SVGOverlayNoNextSSR from "../components/bike-collisions-module/svg-overlay/svg-overlay-no-next-ssr";
@@ -15,11 +14,9 @@ import {CanvasOverlayTypes} from "../components/bike-collisions-module/canvas-ov
 import {SVGOverlayTypes} from "../components/bike-collisions-module/svg-overlay/svg-overlay.types";
 import {Legends} from "../hooks/legends-module/legends";
 import {useLegendStore} from "../hooks/legends-module/use-legend-store";
+import {MapContext} from '../components/shared-module/shared-leaflet-map/map-context';
 import LegendMode = Legends.LegendMode;
 import LegendRegistry = Legends.LegendRegistry;
-import LegendDataTypes = Legends.LegendDataTypes;
-import { MapContext } from '../components/shared-module/shared-leaflet-map/map-context';
-import {MapProvider} from "../components/shared-module/shared-leaflet-map/map-provider";
 
 
 const INITIAL_CENTER: LatLngExpression = {lat: 51.507359, lng: -0.126439};
@@ -28,7 +25,7 @@ const INITIAL_ZOOM: number = 12;
 const Home: NextPage = () => {
   const data = useCSV<BikeCollision>('/data/bike_collisions.csv');
   const [legendStore, legendDispatcher] = useLegendStore();
-  const [mapContextData,] = useContext(MapContext);
+  const [mapContextData, ] = useContext(MapContext);
   
   
   const handleColorData = useCallback((colorData: Array<CanvasOverlayTypes.ColorData>) => {
@@ -48,24 +45,24 @@ const Home: NextPage = () => {
   }, [legendDispatcher]);
   
   const handleShapeLegendData = useCallback((shapeLegendData: SVGOverlayTypes.LegendData[]) => {
-      legendDispatcher({
-        mode: LegendMode.SHAPE,
-        data: shapeLegendData,
-        id: 'markers',
-        title: 'Collision Locations',
-        options: {
-          disabled: shapeLegendData.length === 0,
-          disabledMessage: 'Zoom to see',
-          disabledIsClickable: true,
-        }
-      });
+    legendDispatcher({
+      mode: LegendMode.SHAPE,
+      data: shapeLegendData,
+      id: 'markers',
+      title: 'Collision Locations',
+      options: {
+        disabled: shapeLegendData.length === 0,
+        disabledMessage: 'Zoom to see',
+        disabledIsClickable: true
+      }
+    });
   }, [legendDispatcher]);
   
-  const handleDisabledLegendClick = useCallback((legend: LegendRegistry<LegendMode>, item: LegendDataTypes[LegendMode] | null) => {
-    if(legend.id === 'markers' && legend?.options?.disabled) {
+  const handleLegendClick = useCallback((legend: LegendRegistry<LegendMode>) => {
+    if (legend.id === 'markers' && legend?.options?.disabled) {
       mapContextData?.mapRef?.current?.setZoom(15);
     }
-  }, [mapContextData?.mapRef])
+  }, [mapContextData?.mapRef]);
   
   const markerData = useMemo(() => data?.filter(d => d.Severity !== CollisionSeverity.slight), [data]);
   const contextData = useMemo(() => data, [data]);
@@ -90,7 +87,7 @@ const Home: NextPage = () => {
             <SVGOverlayNoNextSSR $onShapeLegendData$={handleShapeLegendData} data={markerData ?? []}/>
           </div>
           <div className={styles.layer}>
-            <LegendsOverlay $onLegendClick$={handleDisabledLegendClick} legendStore={legendStore}/>
+            <LegendsOverlay $onLegendClick$={handleLegendClick} legendStore={legendStore}/>
           </div>
         </SharedLeafletMapNoNextSSR>
       </div>
@@ -109,9 +106,7 @@ const Home: NextPage = () => {
                 crossOrigin=""/>
           {/*<link rel="icon" href="/favicon.ico" />*/}
         </Head>
-        <MapProvider>
-          {(data && data.length > 0) ? Main : Loading}
-        </MapProvider>
+        {(data && data.length > 0) ? Main : Loading}
         <footer className={styles.footer}>
           <p>
             <b>Data:</b> <a href={'https://bikedata.cyclestreets.net/collisions/#9.44/51.4814/0.0567'}>Bike Collisions

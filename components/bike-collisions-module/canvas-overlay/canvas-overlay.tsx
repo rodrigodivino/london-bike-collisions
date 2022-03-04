@@ -23,8 +23,6 @@ const CanvasOverlay: FunctionComponent<CanvasOverlayTypes.Props> = (
   const [projectedData, setProjectedData] = useState<ProjectedLayout<BikeCollision>[]>([]);
   const [mapContextData, ] = useContext(MapContext);
   
-  console.log("mapContextData", mapContextData);
-  
   useLayoutEffect(() => {
     if(mapContextData?.zoomAnim) return;
     setProjectedData(getProjectedLayout<BikeCollision>(
