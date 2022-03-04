@@ -1,4 +1,4 @@
-import {FunctionComponent, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState} from "react";
+import {FunctionComponent, useContext, useEffect, useLayoutEffect, useMemo, useState} from "react";
 import {CanvasOverlayTypes} from "./canvas-overlay.types";
 import styles from './canvas-overlay.module.css';
 import {useQuickDOMRef} from "../../../hooks/use-quick-dom-ref";
@@ -12,6 +12,7 @@ import {LatLng} from "leaflet";
 import getNiceThresholds from "../../../hooks/get-nice-thresholds";
 import {getOpaqueEquivalent} from "../../../hooks/get-opaque-equivalent";
 import {MapContext} from "../../shared-module/shared-leaflet-map/map-context";
+import {getMapZoomAnimMimic} from "../../../hooks/get-map-zoom-anim-mimic";
 
 const CanvasOverlay: FunctionComponent<CanvasOverlayTypes.Props> = (
     {
@@ -21,21 +22,27 @@ const CanvasOverlay: FunctionComponent<CanvasOverlayTypes.Props> = (
   const [canvas, canvasRef] = useQuickDOMRef<HTMLCanvasElement>();
   const [width, height] = useResponsiveMural(canvasRef);
   const [projectedData, setProjectedData] = useState<ProjectedLayout<BikeCollision>[]>([]);
-  const [mapContextData, ] = useContext(MapContext);
+  const [mapContextData] = useContext(MapContext);
   
   useLayoutEffect(() => {
-    if(mapContextData?.zoomAnim) return;
+    if (mapContextData?.zoomAnim) {
+      return;
+    }
     setProjectedData(getProjectedLayout<BikeCollision>(
-        d => mapContextData?.mapRef?.current?.project([d.Latitude, d.Longitude]) ?? {x: 0, y:0},
+        d => mapContextData?.mapRef?.current?.project([d.Latitude, d.Longitude]) ?? {x: 0, y: 0},
         data
     ));
   }, [data, mapContextData?.mapRef, mapContextData?.zoomAnim]);
   
   
   const [hexbinData, hexagonPathString, binRadius] = useMemo(() => {
-    const measurementBounds = new LatLng(data[0].Latitude, data[0].Longitude).toBounds(CanvasOverlayConst.BIN_RADIUS_METERS);
-  
-    const binRadius = Math.abs((mapContextData?.mapRef?.current?.project(measurementBounds.getNorthEast()).x ?? 0) - (mapContextData?.mapRef?.current?.project(measurementBounds.getNorthWest()).x ?? 0));
+    const measurementBounds = new LatLng(
+        data[0].Latitude,
+        data[0].Longitude
+    ).toBounds(CanvasOverlayConst.BIN_RADIUS_METERS);
+    
+    const binRadius = Math.abs((mapContextData?.mapRef?.current?.project(measurementBounds.getNorthEast()).x ?? 0) -
+        (mapContextData?.mapRef?.current?.project(measurementBounds.getNorthWest()).x ?? 0));
     
     const relativeBinPoint = projectedData[0] ?? {x: 0, y: 0};
     
@@ -55,7 +62,7 @@ const CanvasOverlay: FunctionComponent<CanvasOverlayTypes.Props> = (
   }, [data, mapContextData?.mapRef, projectedData]);
   
   const maxBinLength = useMemo(() => {
-    return max(hexbinData, b => b.length) as number
+    return max(hexbinData, b => b.length) as number;
   }, [hexbinData]);
   
   const colorThresholds = useMemo(() => {
@@ -64,7 +71,7 @@ const CanvasOverlay: FunctionComponent<CanvasOverlayTypes.Props> = (
         maxBinLength,
         CanvasOverlayConst.MINIMUM_VISIBLE_HEX_VALUE
     );
-  }, [maxBinLength]) 
+  }, [maxBinLength]);
   
   const bucketColors = colorThresholds.slice(0, -1).map((t, i, a) => {
     const v = i / (a.length - 1);
@@ -96,7 +103,8 @@ const CanvasOverlay: FunctionComponent<CanvasOverlayTypes.Props> = (
   });
   
   
-  const projectionOrigin = mapContextData?.mapRef?.current?.project(mapContextData?.mapRef?.current?.getBounds().getNorthWest()) ?? {x: 0, y: 0};
+  const projectionOrigin = mapContextData?.mapRef?.current?.project(mapContextData?.mapRef?.current?.getBounds()
+      .getNorthWest()) ?? {x: 0, y: 0};
   
   const hexagonPath2D = new Path2D(hexagonPathString);
   
@@ -138,30 +146,11 @@ const CanvasOverlay: FunctionComponent<CanvasOverlayTypes.Props> = (
     }
   }
   
-  let translate = '';
-  
-  const lastTranslate = useRef<string>(translate);
-  
-  
-  if(mapContextData?.zoomAnim) {
-    const currentMapCenter = mapContextData?.mapCenter;
-    const soonToBeMapCenter = mapContextData?.zoomAnim?.center;
-      const zoomDiff = mapContextData?.zoomAnim?.zoom - (mapContextData?.mapRef?.current?.getZoom() ?? 0);
-      const currentProjectedCenter = mapContextData?.mapRef?.current?.project(currentMapCenter) ?? {x: 0, y: 0};
-      const soonToBeCenterProjected = mapContextData?.mapRef?.current?.project(soonToBeMapCenter) ?? {x: 0, y: 0};
-      const diffX = currentProjectedCenter.x - soonToBeCenterProjected.x;
-      const diffY = currentProjectedCenter.y - soonToBeCenterProjected.y;
-      translate = `scale(${2 ** zoomDiff})translate(${diffX}px, ${diffY}px)`
-      lastTranslate.current = translate;
-  } else {
-    translate = 'translate(0,0)'
-  }
-  
-  
+  const {zoomAnimMimic} = getMapZoomAnimMimic(mapContextData?.zoomAnim, mapContextData?.mapRef?.current);
   
   return <div className={styles.wrapper}>
-    <canvas style={{transform: translate}} key="canvas" width={width} height={height} ref={canvasRef}
-            className={`${styles.canvas} ${mapContextData?.zoomAnim ? styles.zooming : ''}`}>
+    <canvas style={zoomAnimMimic} key="canvas" width={width} height={height} ref={canvasRef}
+            className={styles.canvas}>
     
     </canvas>
   </div>;

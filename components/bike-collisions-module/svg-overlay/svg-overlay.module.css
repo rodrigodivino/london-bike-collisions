@@ -8,8 +8,8 @@
 }
 
 .zooming {
-    opacity: 0.3;
-    filter: grayscale(100%);
+    /*opacity: 0.3;*/
+    /*filter: grayscale(100%);*/
 }
 
 .hexbin {

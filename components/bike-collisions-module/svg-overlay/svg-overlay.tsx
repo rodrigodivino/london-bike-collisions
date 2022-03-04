@@ -5,6 +5,7 @@ import {BikeCollision} from "../../../types/bike-collision";
 import {getProjectedLayout, ProjectedLayout} from "../../../hooks/get-projected-layout";
 import {useResponsiveMural} from "../../../hooks/use-responsive-mural";
 import {MapContext} from "../../shared-module/shared-leaflet-map/map-context";
+import {getMapZoomAnimMimic} from "../../../hooks/get-map-zoom-anim-mimic";
 
 const MARKER_ZOOM_THRESHOLD = 15;
 const SVGOverlay: FunctionComponent<SVGOverlayTypes.Props> = ({data, $onShapeLegendData$}) => {
@@ -87,8 +88,9 @@ const SVGOverlay: FunctionComponent<SVGOverlayTypes.Props> = ({data, $onShapeLeg
   }, [$onShapeLegendData$, mapContextData?.mapRef, mapContextData?.zoomAnim]);
   
   
+  const {zoomAnimMimic} = getMapZoomAnimMimic(mapContextData?.zoomAnim, mapContextData?.mapRef?.current);
   
-  return <svg ref={svgRef} className={styles.svg}>
+  return <svg style={zoomAnimMimic}  ref={svgRef} className={styles.svg}>
     <g className={`${mapContextData?.zoomAnim ? styles.zooming : ''}`}>
       <g className="marker">
         <g>
