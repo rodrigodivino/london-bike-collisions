@@ -49,7 +49,7 @@ const Home: NextPage = () => {
       mode: LegendMode.SHAPE,
       data: shapeLegendData,
       id: 'markers',
-      title: 'Collision Locations',
+      title: 'Collision Location',
       options: {
         disabled: shapeLegendData.length === 0,
         disabledMessage: 'Zoom to see',
@@ -70,8 +70,7 @@ const Home: NextPage = () => {
   const Main = <main className={styles.main}>
     <div className={styles.header}>
       <h1 className={styles.title}>Bicycle collisions in london between 2005 and 2019</h1>
-      <h2 className={styles.subtitle}>Understanding the routes that have been dangerous for cyclists in the past
-        years</h2>
+      <h2 className={styles.subtitle}>A look at the routes that have been dangerous for cyclists</h2>
     </div>
     
     <div className={styles.layerContainer}>

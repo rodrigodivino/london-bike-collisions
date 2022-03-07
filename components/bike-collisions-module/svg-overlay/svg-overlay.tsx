@@ -79,7 +79,7 @@ const SVGOverlay: FunctionComponent<SVGOverlayTypes.Props> = ({data, $onShapeLeg
                   <path d={circlePath(0, 0)} className={styles.circleMesh}/>
                 </g>
               </svg>,
-              label: 'Severe collisions'
+              label: 'Severe collision'
             }
           ]);
     } else {

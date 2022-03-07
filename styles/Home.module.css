@@ -6,6 +6,11 @@
 
 }
 
+.subtitle {
+    font-weight: normal;
+    color: #515151;
+}
+
 .footer {
     margin: 0 auto 0 auto;
     max-width: 1600px;
