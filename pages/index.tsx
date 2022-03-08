@@ -23,7 +23,7 @@ const INITIAL_CENTER: LatLngExpression = {lat: 51.507359, lng: -0.126439};
 const INITIAL_ZOOM: number = 12;
 
 const Home: NextPage = () => {
-  const data = useCSV<BikeCollision>(process.env.NODE_ENV ? '/london-bike-collisions/bike_collisions.csv' : '/bike_collisions.csv');
+  const data = useCSV<BikeCollision>(process.env.NODE_ENV === 'development' ? '/bike_collisions.csv' : '/london-bike-collisions/bike_collisions.csv');
   
   const [legendStore, legendDispatcher] = useLegendStore();
   const [mapContextData] = useContext(MapContext);
