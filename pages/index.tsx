@@ -3,7 +3,7 @@ import Head from 'next/head';
 import styles from '../styles/Home.module.css';
 import SharedLeafletMapNoNextSSR from "../components/shared-module/shared-leaflet-map/shared-leaflet-map-no-next-ssr";
 import {LatLngExpression} from 'leaflet';
-import {useCallback, useContext, useEffect, useMemo, useState} from "react";
+import {useCallback, useContext, useMemo} from "react";
 import {BikeCollision} from "../types/bike-collision";
 import {useCSV} from "../hooks/use-csv";
 import SVGOverlayNoNextSSR from "../components/bike-collisions-module/svg-overlay/svg-overlay-no-next-ssr";
@@ -17,7 +17,6 @@ import {useLegendStore} from "../hooks/legends-module/use-legend-store";
 import {MapContext} from '../components/shared-module/shared-leaflet-map/map-context';
 import LegendMode = Legends.LegendMode;
 import LegendRegistry = Legends.LegendRegistry;
-import {csvParse} from "d3";
 
 
 const INITIAL_CENTER: LatLngExpression = {lat: 51.507359, lng: -0.126439};
@@ -26,9 +25,12 @@ const INITIAL_ZOOM: number = 12;
 const Home: NextPage = () => {
   // TODO: See how this prefix impacts localhost and gh pages deployment
   // TODO: Move to fetch if necessary
-  const data = useCSV<BikeCollision>('/london-bike-collisions/bike_collisions.csv');
+  const data = useCSV<BikeCollision>(process.env.NODE_ENV === 'development' ?
+      '/london-bike-collisions/bike_collisions.csv' :
+      '/bike_collisions.csv');
+  
   const [legendStore, legendDispatcher] = useLegendStore();
-  const [mapContextData, ] = useContext(MapContext);
+  const [mapContextData] = useContext(MapContext);
   
   
   const handleColorData = useCallback((colorData: Array<CanvasOverlayTypes.ColorData>) => {
