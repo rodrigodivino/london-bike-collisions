@@ -17,14 +17,14 @@ import {useLegendStore} from "../hooks/legends-module/use-legend-store";
 import {MapContext} from '../components/shared-module/shared-leaflet-map/map-context';
 import LegendMode = Legends.LegendMode;
 import LegendRegistry = Legends.LegendRegistry;
+import {autoType, csv, csvParse} from "d3";
+import * as fs from "fs";
 
 
 const INITIAL_CENTER: LatLngExpression = {lat: 51.507359, lng: -0.126439};
 const INITIAL_ZOOM: number = 12;
 
-const Home: NextPage = () => {
-  const data = useCSV<BikeCollision>(process.env.NODE_ENV === 'development' ? '/bike_collisions.csv' : '/london-bike-collisions/bike_collisions.csv');
-  
+const Home: NextPage<{data: BikeCollision[]}> = ({data}) => {
   const [legendStore, legendDispatcher] = useLegendStore();
   const [mapContextData] = useContext(MapContext);
   
@@ -120,5 +120,15 @@ const Home: NextPage = () => {
       </div>
   );
 };
+
+export async function getStaticProps(): Promise<{props: {data: BikeCollision[]}}> {
+  const fileContents = fs.readFileSync('./data/bike_collisions.csv', "utf8");
+  
+  return {
+    props: {
+      data: csvParse(fileContents, autoType) as BikeCollision[]
+    }
+  }
+}
 
 export default Home;
