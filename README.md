@@ -1,34 +1,26 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# A Data Visualization of the London Bicycle Collisions between 2005 and 2019.
 
-## Getting Started
+The visualization can be accessed at [https://rodrigodivino.github.io/london-bike-collisions/](https://rodrigodivino.github.io/london-bike-collisions/).
 
-First, run the development server:
+This visualization shows the distribution of bicycle accidents in London between 2005 and 2019. It displays a map with a
+hexagonal heatmap of the area, in which the color of the hexagons shows the number of collisions.
 
-```bash
-npm run dev
-# or
-yarn dev
-```
+![img.png](docs/hex.png)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Zooming further the map also displays the locations of individual severe collisions,
+as defined in the data.
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+![img_1.png](docs/markers.png)
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+The goal of the visualization is to identify dangerous locations where non-slight accidents are likely to occur,
+bringing awareness of this information to cyclists in the area.
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+The number of casualties in the individual accidents and the exact severity of the collision
+are not displayed in respect to the involved civilians.
 
-## Learn More
+# Data Source
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+The data in this visualization is from
+[CycleStreets]('https://bikedata.cyclestreets.net/collisions/#9.44/51.4814/0.0567'). The data was a part of the
+[Makeover Monday](https://www.makeovermonday.co.uk/data/) challenge
+[in Week 31 2021](https://data.world/makeovermonday/2021w31).
