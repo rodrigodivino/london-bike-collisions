@@ -21,6 +21,6 @@ are not displayed in respect to the involved civilians.
 # Data Source
 
 The data in this visualization is from
-[CycleStreets]('https://bikedata.cyclestreets.net/collisions/#9.44/51.4814/0.0567'). The data was a part of the
+[CycleStreets](https://bikedata.cyclestreets.net/collisions/#9.44/51.4814/0.0567). The data was a part of the
 [Makeover Monday](https://www.makeovermonday.co.uk/data/) challenge
 [in Week 31 2021](https://data.world/makeovermonday/2021w31).
